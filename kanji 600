@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Kartu kanji – 503 kata</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@500;700&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    box-sizing: border-box;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    --page: #e9edf3; --ink: #1b2440; --muted: #5b6482;
+    --front: #1b2440; --front-ink: #f4f6fb; --front-soft: #aab3d1;
+    --back: #ffffff; --back-ink: #1b2440; --line: #cdd4e4; --accent: #c8402f;
+    --btn: #ffffff; --btn-ink: #1b2440; --seg-on: #1b2440; --seg-on-ink: #ffffff;
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --page: #0f1424; --ink: #e8ebf6; --muted: #8f99bb;
+      --front: #e8ebf6; --front-ink: #141a30; --front-soft: #55608a;
+      --back: #1a2140; --back-ink: #e8ebf6; --line: #2c365e; --accent: #ff7a63;
+      --btn: #1a2140; --btn-ink: #e8ebf6; --seg-on: #e8ebf6; --seg-on-ink: #141a30;
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --page: #0f1424; --ink: #e8ebf6; --muted: #8f99bb;
+    --front: #e8ebf6; --front-ink: #141a30; --front-soft: #55608a;
+    --back: #1a2140; --back-ink: #e8ebf6; --line: #2c365e; --accent: #ff7a63;
+    --btn: #1a2140; --btn-ink: #e8ebf6; --seg-on: #e8ebf6; --seg-on-ink: #141a30;
+    color-scheme: dark;
+  }
+  *, *::before, *::after { box-sizing: inherit; }
+  html { scroll-padding-top: env(safe-area-inset-top, 0px); }
+  body {
+    margin: 0; min-height: 100vh; background: var(--page); color: var(--ink);
+    font-family: "Zen Kaku Gothic New", "Hiragino Sans", "Yu Gothic", "Noto Sans JP", system-ui, sans-serif;
+    display: flex; flex-direction: column; align-items: center; padding: 20px 16px 28px;
+  }
+  header { width: 100%; max-width: 460px; display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 12px; }
+  h1 { font-size: 1rem; font-weight: 700; margin: 0; }
+  #counter { font-size: .95rem; color: var(--muted); font-variant-numeric: tabular-nums; }
+
+  .setting { width: 100%; max-width: 460px; margin-bottom: 12px; }
+  .setting-label { font-size: .8rem; color: var(--muted); margin-bottom: 6px; }
+  .seg { display: flex; border: 1.5px solid var(--line); border-radius: 14px; padding: 3px; background: var(--btn); }
+  .seg button {
+    flex: 1; font: inherit; font-size: .9rem; font-weight: 500; padding: 10px 8px;
+    border: 0; border-radius: 11px; background: transparent; color: var(--btn-ink); cursor: pointer;
+  }
+  .seg button[aria-checked="true"], .seg button[aria-pressed="true"] { background: var(--seg-on); color: var(--seg-on-ink); font-weight: 700; }
+  .seg button:focus-visible { outline: 3px solid var(--accent); outline-offset: 1px; }
+  .groups { display: grid; grid-template-columns: repeat(5, 1fr); gap: 3px; }
+  .groups button { padding: 10px 2px; font-size: .82rem; font-variant-numeric: tabular-nums; }
+
+  .stage { width: 100%; max-width: 460px; perspective: 1400px; }
+  .card {
+    position: relative; width: 100%; aspect-ratio: 3 / 4; min-height: 430px; max-height: 76vh;
+    margin: 0 auto; cursor: pointer; transform-style: preserve-3d;
+    transition: transform .55s cubic-bezier(.3,.7,.2,1);
+    border: 0; background: none; padding: 0; display: block; text-align: inherit; font: inherit; color: inherit;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .card.flipped { transform: rotateY(180deg); }
+  .card:focus-visible { outline: 3px solid var(--accent); outline-offset: 6px; border-radius: 22px; }
+  .face {
+    position: absolute; inset: 0; backface-visibility: hidden; -webkit-backface-visibility: hidden;
+    border-radius: 22px; display: flex; padding: 22px 20px; text-align: center; overflow: auto;
+  }
+  .inner { margin: auto; width: 100%; display: flex; flex-direction: column; align-items: center; }
+  .front { background: var(--front); color: var(--front-ink); }
+  .back  { background: var(--back); color: var(--back-ink); border: 1.5px solid var(--line); transform: rotateY(180deg); }
+
+  .pic {
+    width: clamp(110px, 34vw, 150px); aspect-ratio: 1; margin-bottom: 16px; padding: 10px;
+    background: #f7f9fd; border-radius: 26px; box-shadow: inset 0 0 0 1.5px var(--line); flex: none;
+    display: flex; align-items: center; justify-content: center; color: #7b86a8; overflow: hidden;
+  }
+  .pic.mini { width: 84px; margin: 0; padding: 7px; border-radius: 18px; }
+  .pic svg { display: block; width: 100%; height: 100%; }
+  .pic img { display: block; width: 100%; height: 100%; object-fit: cover; border-radius: 16px; }
+  .pic.empty { flex-direction: column; gap: 6px; font-size: .72rem; text-align: center; border: 2px dashed #b8c1da; box-shadow: none; }
+  .pic.empty svg { width: 38%; height: auto; }
+  .pic.mini.empty { font-size: 0; gap: 0; }
+  .pic.mini.empty svg { width: 46%; }
+
+  .serif { font-family: "Shippori Mincho", "Hiragino Mincho ProN", "Yu Mincho", "Noto Serif JP", serif; font-weight: 700; }
+  .big { font-size: clamp(44px, 14vw, 80px); line-height: 1.15; letter-spacing: .04em; word-break: keep-all; }
+  .big.long { font-size: clamp(32px, 10vw, 56px); }
+  .big.kana { font-size: clamp(34px, 11vw, 58px); }
+  .big.kana.long { font-size: clamp(26px, 8.2vw, 42px); }
+  .hint { margin-top: 18px; font-size: .8rem; color: var(--front-soft); }
+
+  .reading { font-size: clamp(30px, 9vw, 44px); color: var(--accent); margin-bottom: 10px; line-height: 1.2; }
+  .meaning { font-size: clamp(1rem, 4.2vw, 1.2rem); line-height: 1.5; max-width: 32ch; }
+  .row { display: flex; align-items: center; justify-content: center; gap: 16px; margin: 16px 0 4px; flex-wrap: wrap; }
+  .row .kanji { font-size: clamp(36px, 11vw, 54px); line-height: 1.1; color: var(--accent); word-break: keep-all; }
+  .row .kanji.long { font-size: clamp(26px, 8vw, 38px); }
+
+  .homo { margin-top: 14px; width: 100%; padding-top: 12px; border-top: 1.5px solid var(--line); }
+  .homo-title { font-size: .78rem; color: var(--muted); margin-bottom: 8px; }
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; }
+  .chip { display: inline-flex; align-items: baseline; gap: 6px; border: 1.5px solid var(--line); border-radius: 12px; padding: 5px 10px; font-size: .82rem; }
+  .chip .k { font-size: 1.1rem; }
+  .none { font-size: .82rem; color: var(--muted); }
+
+  .picbar { display: flex; gap: 8px; width: 100%; max-width: 460px; margin-top: 12px; }
+  .picbar button {
+    flex: 1; font: inherit; font-size: .85rem; padding: 10px 8px; border-radius: 12px; cursor: pointer;
+    background: transparent; color: var(--ink); border: 1.5px dashed var(--line);
+  }
+  .picbar button:disabled { display: none; }
+  .picbar button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+
+  .controls { margin-top: 12px; display: flex; gap: 10px; width: 100%; max-width: 460px; }
+  .controls button {
+    flex: 1; font: inherit; font-weight: 500; font-size: 1rem; padding: 14px 10px; border-radius: 14px; cursor: pointer;
+    background: var(--btn); color: var(--btn-ink); border: 1.5px solid var(--line);
+  }
+  .controls button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+  .controls button:active { transform: translateY(1px); }
+  .controls button:disabled { opacity: .4; cursor: default; }
+  .controls button[aria-pressed="true"] { background: var(--seg-on); color: var(--seg-on-ink); border-color: var(--seg-on); }
+  #shuffle { flex: 0 0 auto; padding-inline: 18px; }
+
+  @media (prefers-reduced-motion: reduce) { .card { transition: none; } }
+</style>
+</head>
+<body>
+  <header>
+    <h1>Kartu flash kanji</h1>
+    <span id="counter" aria-live="polite"></span>
+  </header>
+
+  <div class="setting">
+    <div class="setting-label" id="group-label">Kelompok kata</div>
+    <div class="seg groups" id="groups" role="group" aria-labelledby="group-label"></div>
+  </div>
+
+  <div class="setting">
+    <div class="setting-label" id="mode-label">Depan kartu menampilkan</div>
+    <div class="seg" role="radiogroup" aria-labelledby="mode-label">
+      <button role="radio" id="m-kanji" aria-checked="true">Kanji + gambar</button>
+      <button role="radio" id="m-yomi" aria-checked="false">Bacaan + gambar</button>
+    </div>
+  </div>
+
+  <div class="stage">
+    <button class="card" id="card" aria-label="Kartu flash. Tekan untuk membalik.">
+      <div class="face front"><div class="inner" id="front"></div></div>
+      <div class="face back"><div class="inner" id="back"></div></div>
+    </button>
+  </div>
+
+  <div class="picbar">
+    <button id="addpic">Tambah gambar</button>
+    <button id="delpic" disabled>Hapus gambar</button>
+  </div>
+  <input type="file" id="file" accept="image/*" hidden>
+
+  <div class="controls">
+    <button id="prev">Sebelumnya</button>
+    <button id="shuffle" aria-pressed="false" title="Acak urutan dalam kelompok ini">Acak</button>
+    <button id="next">Berikutnya</button>
+  </div>
+
+<script>
+  // 503 kata dari 600-699.csv. r = bacaan hiragana, m = arti (Indonesia), h = maksimal 3 kata dengan bunyi sama.
+  var DATA = [{"id":1,"k":"換える","r":"かえる","m":"Mengganti, menukar; menggantikan","h":[["変える","Mengubah"],["帰る","Pulang"],["蛙","Katak"]]},{"id":2,"k":"交換","r":"こうかん","m":"Pertukaran, penggantian; barter; kliring (cek)","h":[["好感","Kesan baik"],["交感","Simpati"]]},{"id":3,"k":"乗り換え","r":"のりかえ","m":"Pindah (kereta, bus); transit; beralih (ideologi, sistem, metode)","h":[]},{"id":4,"k":"乗り換える","r":"のりかえる","m":"Pindah (kereta, bus); beralih (ke partai, perusahaan, metode lain)","h":[]},{"id":5,"k":"変換","r":"へんかん","m":"Perubahan, konversi, transformasi","h":[["返還","Pengembalian"]]},{"id":6,"k":"引き換え","r":"ひきかえ","m":"Pertukaran, penukaran","h":[]},{"id":7,"k":"占い","r":"うらない","m":"Ramalan nasib, peramalan","h":[]},{"id":8,"k":"買い占める","r":"かいしめる","m":"Memborong, menimbun (barang)","h":[]},{"id":9,"k":"独り占め","r":"ひとりじめ","m":"Menguasai sendiri, memonopoli","h":[]},{"id":10,"k":"占有","r":"せんゆう","m":"Kepemilikan, penguasaan, pendudukan","h":[["専有","Kepemilikan eksklusif"],["戦友","Rekan seperjuangan"]]},{"id":11,"k":"買い占め","r":"かいしめ","m":"Memborong barang; menguasai pasar","h":[]},{"id":12,"k":"頼む","r":"たのむ","m":"Meminta, memohon; memesan; mempercayakan; mengandalkan","h":[]},{"id":13,"k":"信頼","r":"しんらい","m":"Kepercayaan, keyakinan, rasa percaya","h":[]},{"id":14,"k":"依頼","r":"いらい","m":"Permintaan, pesanan; ketergantungan","h":[["以来","Sejak"]]},{"id":15,"k":"頼る","r":"たよる","m":"Mengandalkan, bergantung pada, meminta bantuan","h":[]},{"id":16,"k":"頼り","r":"たより","m":"Ketergantungan, sandaran","h":[["便り","Kabar, surat"]]},{"id":17,"k":"頼もしい","r":"たのもしい","m":"Dapat diandalkan, terpercaya; menjanjikan","h":[]},{"id":18,"k":"道","r":"みち","m":"Jalan, jalur; rute; jarak tempuh","h":[["未知","Tak dikenal"]]},{"id":19,"k":"途中","r":"とちゅう","m":"Di tengah jalan, dalam perjalanan; di tengah-tengah","h":[]},{"id":20,"k":"途","r":"と","m":"Jalan, rute","h":[["戸","Pintu"],["都","Ibu kota"],["度","Derajat, kali"]]},{"id":21,"k":"前途","r":"ぜんと","m":"Masa depan, prospek; perjalanan yang masih ada di depan","h":[]},{"id":22,"k":"中途","r":"ちゅうと","m":"Setengah jalan, di tengah-tengah","h":[]},{"id":23,"k":"抜き","r":"ぬき","m":"Meniadakan, menghilangkan; melewati; berturut-turut","h":[]},{"id":24,"k":"抜け出す","r":"ぬけだす","m":"Menyelinap keluar, melepaskan diri; keluar dari kesulitan","h":[]},{"id":25,"k":"選抜","r":"せんばつ","m":"Seleksi, pemilihan; turnamen bisbol SMA undangan nasional","h":[]},{"id":26,"k":"抜ける","r":"ぬける","m":"Terlepas, tanggal; terlewat, hilang; lolos; tembus","h":[]},{"id":27,"k":"生え抜き","r":"はえぬき","m":"Asli kelahiran setempat; sejak awal (dalam kelompok)","h":[]},{"id":28,"k":"伸ばす","r":"のばす","m":"Memanjangkan (rambut, kuku); memperpanjang, meregangkan; mengulurkan","h":[["延ばす","Menunda, memperpanjang"]]},{"id":29,"k":"伸び伸び","r":"のびのび","m":"Dengan santai, tenang, tanpa beban; tumbuh bebas","h":[]},{"id":30,"k":"伸し","r":"のし","m":"Peregangan; renang gaya samping","h":[]},{"id":31,"k":"引き伸ばし","r":"ひきのばし","m":"Perpanjangan; pembesaran (foto)","h":[]},{"id":32,"k":"爆発","r":"ばくはつ","m":"Ledakan, letusan; luapan (emosi)","h":[]},{"id":33,"k":"爆弾","r":"ばくだん","m":"Bom; (minuman) alkohol campuran","h":[]},{"id":34,"k":"原爆","r":"げんばく","m":"Bom atom","h":[]},{"id":35,"k":"爆撃","r":"ばくげき","m":"Pengeboman, serangan bom","h":[]},{"id":36,"k":"水爆","r":"すいばく","m":"Bom hidrogen","h":[]},{"id":37,"k":"普通","r":"ふつう","m":"Biasa, normal, umum, rata-rata; biasanya","h":[["不通","Terputus"]]},{"id":38,"k":"普及","r":"ふきゅう","m":"Penyebaran, populerisasi","h":[["不朽","Abadi"],["不休","Tanpa henti"]]},{"id":39,"k":"普遍","r":"ふへん","m":"Universal, umum, ada di mana-mana","h":[["不変","Tak berubah"],["不偏","Tidak berpihak"]]},{"id":40,"k":"普段着","r":"ふだんぎ","m":"Pakaian sehari-hari, pakaian santai","h":[]},{"id":41,"k":"普遍的","r":"ふへんてき","m":"Bersifat universal, ada di mana-mana","h":[]},{"id":42,"k":"結婚","r":"けっこん","m":"Pernikahan","h":[["血痕","Bercak darah"]]},{"id":43,"k":"婚約","r":"こんやく","m":"Pertunangan","h":[]},{"id":44,"k":"離婚","r":"りこん","m":"Perceraian","h":[]},{"id":45,"k":"新婚","r":"しんこん","m":"Pengantin baru","h":[]},{"id":46,"k":"未婚","r":"みこん","m":"Belum menikah, lajang","h":[]},{"id":47,"k":"齢","r":"よわい","m":"Usia (seseorang)","h":[]},{"id":48,"k":"年齢","r":"ねんれい","m":"Umur, usia","h":[]},{"id":49,"k":"高齢","r":"こうれい","m":"Usia lanjut","h":[["恒例","Kebiasaan tetap"],["好例","Contoh baik"]]},{"id":50,"k":"高齢者","r":"こうれいしゃ","m":"Orang lanjut usia, lansia","h":[]},{"id":51,"k":"老齢","r":"ろうれい","m":"Usia tua, kepikunan","h":[]},{"id":52,"k":"季節","r":"きせつ","m":"Musim, waktu dalam setahun","h":[]},{"id":53,"k":"四季","r":"しき","m":"Empat musim","h":[["指揮","Memimpin, komando"],["士気","Semangat"],["式","Upacara, rumus"]]},{"id":54,"k":"冬季","r":"とうき","m":"Musim dingin","h":[["陶器","Keramik"],["投棄","Pembuangan"],["騰貴","Kenaikan harga"]]},{"id":55,"k":"末期","r":"まっき","m":"Tahap akhir, masa-masa terakhir, akhir hayat","h":[]},{"id":56,"k":"雨季","r":"うき","m":"Musim hujan","h":[["浮き","Pelampung"]]},{"id":57,"k":"押さえる","r":"おさえる","m":"Menahan, menekan; menangkap, menguasai; menutup (bagian tubuh)","h":[["抑える","Menahan, mengendalikan"]]},{"id":58,"k":"抑え","r":"おさえ","m":"Pemberat (mis. penindih kertas); pengendalian; cadangan","h":[]},{"id":59,"k":"押し入る","r":"おしいる","m":"Menerobos masuk, memaksa masuk (ke rumah); mengganggu","h":[]},{"id":60,"k":"後押し","r":"あとおし","m":"Dukungan, dorongan; mendorong dari belakang","h":[]},{"id":61,"k":"倒れる","r":"たおれる","m":"Roboh, jatuh, tumbang; bangkrut; jatuh sakit","h":[]},{"id":62,"k":"面倒","r":"めんどう","m":"Repot, kerepotan; kesulitan; perhatian, perawatan","h":[]},{"id":63,"k":"倒す","r":"たおす","m":"Merobohkan, menjatuhkan, mengalahkan","h":[]},{"id":64,"k":"倒産","r":"とうさん","m":"Kebangkrutan (perusahaan)","h":[]},{"id":65,"k":"一辺倒","r":"いっぺんとう","m":"Pengabdian penuh (pada); dukungan tanpa syarat","h":[]},{"id":66,"k":"最終","r":"さいしゅう","m":"Terakhir, final, penutup; kereta terakhir hari itu","h":[["採集","Pengumpulan"]]},{"id":67,"k":"終わり","r":"おわり","m":"Akhir, penutup; ajal","h":[]},{"id":68,"k":"終わる","r":"おわる","m":"Berakhir, selesai","h":[]},{"id":69,"k":"終了","r":"しゅうりょう","m":"Akhir, penutupan, selesai","h":[["修了","Penyelesaian kursus"]]},{"id":70,"k":"了","r":"りょう","m":"Selesai, tamat","h":[["量","Jumlah"],["寮","Asrama"],["漁","Penangkapan ikan"]]},{"id":71,"k":"完了","r":"かんりょう","m":"Penyelesaian, kelengkapan; bentuk sempurna (tata bahasa)","h":[["官僚","Birokrat"]]},{"id":72,"k":"了解","r":"りょうかい","m":"Pemahaman, persetujuan; oke, siap","h":[["領海","Perairan teritorial"]]},{"id":73,"k":"終える","r":"おえる","m":"Menyelesaikan; lulus","h":[]},{"id":74,"k":"絡む","r":"からむ","m":"Melilit, terjerat; terlibat; mencari gara-gara","h":[]},{"id":75,"k":"絡み","r":"からみ","m":"Keterkaitan, keterlibatan, hubungan","h":[]},{"id":76,"k":"脈絡","r":"みゃくらく","m":"Pertalian logis, koherensi, konteks; pembuluh darah","h":[]},{"id":77,"k":"短絡","r":"たんらく","m":"Korsleting; lompatan logika, kesimpulan terburu-buru","h":[]},{"id":78,"k":"絡み合う","r":"からみあう","m":"Saling melilit, saling terjerat; saling terkait","h":[]},{"id":79,"k":"募る","r":"つのる","m":"Bertambah kuat, meningkat; merekrut, menghimpun","h":[]},{"id":80,"k":"募集","r":"ぼしゅう","m":"Perekrutan, penerimaan pendaftar; penggalangan (dana)","h":[]},{"id":81,"k":"応募","r":"おうぼ","m":"Pendaftaran, lamaran, keikutsertaan (lomba, undian)","h":[]},{"id":82,"k":"募金","r":"ぼきん","m":"Penggalangan dana","h":[]},{"id":83,"k":"公募","r":"こうぼ","m":"Perekrutan terbuka; seruan publik (mis. sumbangan)","h":[["酵母","Ragi"]]},{"id":84,"k":"払い","r":"はらい","m":"Pembayaran, tagihan; penyapuan; goresan menyapu (dalam tulisan)","h":[["祓い","Penyucian"]]},{"id":85,"k":"払う","r":"はらう","m":"Membayar; menyapu bersih, membersihkan; menepis","h":[]},{"id":86,"k":"支払う","r":"しはらう","m":"Membayar","h":[]},{"id":87,"k":"前払い","r":"まえばらい","m":"Pembayaran di muka","h":[]},{"id":88,"k":"払拭","r":"ふっしょく","m":"Penghapusan, pembersihan, pelenyapan","h":[]},{"id":89,"k":"上る","r":"のぼる","m":"Naik, mendaki; terbit (matahari); mencapai (jumlah)","h":[["登る","Mendaki"],["昇る","Naik, terbit"]]},{"id":90,"k":"上り","r":"のぼり","m":"Pendakian, tanjakan; kereta arah naik (ke pusat)","h":[["幟","Panji, spanduk"]]},{"id":91,"k":"上昇","r":"じょうしょう","m":"Kenaikan, peningkatan","h":[["常勝","Selalu menang"]]},{"id":92,"k":"昇進","r":"しょうしん","m":"Promosi jabatan, kenaikan pangkat","h":[["小心","Penakut"],["傷心","Patah hati"]]},{"id":93,"k":"上り下り","r":"のぼりくだり","m":"Naik turun, pendakian dan penurunan","h":[]},{"id":94,"k":"遅れ","r":"おくれ","m":"Keterlambatan, ketertinggalan, penundaan","h":[]},{"id":95,"k":"遅延","r":"ちえん","m":"Penundaan, latensi","h":[]},{"id":96,"k":"遅刻","r":"ちこく","m":"Keterlambatan, datang terlambat","h":[]},{"id":97,"k":"遅れる","r":"おくれる","m":"Terlambat, tertunda; tertinggal","h":[]},{"id":98,"k":"手遅れ","r":"ておくれ","m":"Sudah terlambat, kehilangan kesempatan terakhir","h":[]},{"id":99,"k":"香り","r":"かおり","m":"Aroma, wangi, bau harum","h":[["薫り","Aroma"]]},{"id":100,"k":"香水","r":"こうすい","m":"Parfum, minyak wangi","h":[["硬水","Air sadah"],["降水","Curah hujan"]]},{"id":101,"k":"香辛料","r":"こうしんりょう","m":"Rempah-rempah, bumbu","h":[]},{"id":102,"k":"香港","r":"ホンコン","m":"Hong Kong","h":[]},{"id":103,"k":"芳香","r":"ほうこう","m":"Wewangian, aroma harum","h":[["方向","Arah"],["奉公","Pengabdian"]]},{"id":104,"k":"更に","r":"さらに","m":"Lebih lagi, selanjutnya, sama sekali (+negatif)","h":[]},{"id":105,"k":"更生","r":"こうせい","m":"Rehabilitasi, memulai hidup baru; kelahiran kembali, pemulihan","h":[["校正","Pemeriksaan naskah"],["構成","Susunan"],["公正","Adil"]]},{"id":106,"k":"更新","r":"こうしん","m":"Pembaruan, pemutakhiran, penggantian; memecahkan (rekor)","h":[["行進","Pawai"],["交信","Komunikasi"],["後進","Generasi penerus"]]},{"id":107,"k":"変更","r":"へんこう","m":"Perubahan, modifikasi, perbaikan, amandemen","h":[["偏向","Kecenderungan"]]},{"id":108,"k":"衣替え","r":"ころもがえ","m":"Ganti pakaian musiman; pembaruan penampilan","h":[]},{"id":109,"k":"抱える","r":"かかえる","m":"Menggendong, memeluk; menanggung (masalah); mempekerjakan","h":[]},{"id":110,"k":"抱負","r":"ほうふ","m":"Cita-cita, ambisi, rencana, harapan","h":[["豊富","Berlimpah"]]},{"id":111,"k":"辛抱","r":"しんぼう","m":"Kesabaran, ketahanan","h":[["心棒","Poros, as"]]},{"id":112,"k":"抱き合う","r":"だきあう","m":"Saling berpelukan","h":[]},{"id":113,"k":"抱く","r":"いだく","m":"Memeluk, menggendong; menyimpan (pikiran, perasaan)","h":[]},{"id":114,"k":"恐れ","r":"おそれ","m":"Ketakutan, kekhawatiran, kemungkinan buruk; rasa segan","h":[]},{"id":115,"k":"恐怖","r":"きょうふ","m":"Ketakutan, teror, kengerian, kepanikan","h":[]},{"id":116,"k":"恐ろしい","r":"おそろしい","m":"Mengerikan, menakutkan; luar biasa, mencengangkan","h":[]},{"id":117,"k":"恐らく","r":"おそらく","m":"Mungkin, barangkali, kemungkinan besar","h":[]},{"id":118,"k":"恐れる","r":"おそれる","m":"Takut, merasa takut pada","h":[]},{"id":119,"k":"戻す","r":"もどす","m":"Mengembalikan, memuntahkan; memulihkan (ke keadaan semula)","h":[]},{"id":120,"k":"戻る","r":"もどる","m":"Kembali, pulang; pulih (mis. barang hilang)","h":[]},{"id":121,"k":"後戻り","r":"あともどり","m":"Mundur, berbalik arah; kemunduran, kambuh","h":[]},{"id":122,"k":"取り戻す","r":"とりもどす","m":"Mengambil kembali, mendapatkan kembali, memulihkan","h":[]},{"id":123,"k":"引き戻す","r":"ひきもどす","m":"Menarik kembali, memulihkan","h":[]},{"id":124,"k":"巨大","r":"きょだい","m":"Raksasa, sangat besar","h":[]},{"id":125,"k":"巨人","r":"きょじん","m":"Raksasa, orang besar; Tokyo Giants (tim bisbol)","h":[]},{"id":126,"k":"巨額","r":"きょがく","m":"Jumlah sangat besar (terutama uang)","h":[]},{"id":127,"k":"巨匠","r":"きょしょう","m":"Maestro, ahli besar","h":[]},{"id":128,"k":"巨木","r":"きょぼく","m":"Pohon besar","h":[]},{"id":129,"k":"震","r":"しん","m":"Zhen (salah satu trigram I Ching: guntur, timur); gemetar","h":[["心","Hati"],["真","Kebenaran"],["神","Dewa"]]},{"id":130,"k":"地震","r":"じしん","m":"Gempa bumi","h":[["自信","Percaya diri"],["自身","Diri sendiri"],["時針","Jarum jam"]]},{"id":131,"k":"震度","r":"しんど","m":"Intensitas gempa (skala seismik)","h":[["深度","Kedalaman"],["進度","Kemajuan"]]},{"id":132,"k":"大震災","r":"だいしんさい","m":"Bencana gempa besar; Gempa Besar Kanto 1923","h":[]},{"id":133,"k":"震源","r":"しんげん","m":"Hiposenter (pusat gempa)","h":[["進言","Saran"],["箴言","Pepatah"]]},{"id":134,"k":"震動","r":"しんどう","m":"Guncangan, getaran, dampak","h":[["振動","Getaran"],["神童","Anak ajaib"]]},{"id":135,"k":"引っ越す","r":"ひっこす","m":"Pindah rumah, pindah tempat tinggal","h":[]},{"id":136,"k":"乗り越える","r":"のりこえる","m":"Memanjat melewati, melampaui; mengatasi, mengungguli","h":[]},{"id":137,"k":"越年","r":"えつねん","m":"Menutup tahun lama, menyambut Tahun Baru; melewati musim dingin","h":[]},{"id":138,"k":"中越","r":"ちゅうえつ","m":"Chuetsu (wilayah di Niigata); Tiongkok dan Vietnam","h":[]},{"id":139,"k":"触る","r":"さわる","m":"Menyentuh, meraba; terlibat; mengganggu","h":[["障る","Mengganggu"]]},{"id":140,"k":"感触","r":"かんしょく","m":"Rasa sentuhan, tekstur; kesan, firasat","h":[["間食","Camilan"],["官職","Jabatan negara"]]},{"id":141,"k":"前触れ","r":"まえぶれ","m":"Pertanda, pemberitahuan awal; tanda-tanda","h":[]},{"id":142,"k":"触れ合い","r":"ふれあい","m":"Kontak, kedekatan, hubungan akrab","h":[]},{"id":143,"k":"触発","r":"しょくはつ","m":"Ledakan karena sentuhan; pemicu, pencetus","h":[]},{"id":144,"k":"依る","r":"よる","m":"Disebabkan oleh; bergantung pada; berdasarkan","h":[["寄る","Mampir"],["夜","Malam"]]},{"id":145,"k":"依然","r":"いぜん","m":"Masih, tetap seperti semula","h":[["以前","Sebelumnya"]]},{"id":146,"k":"依然として","r":"いぜんとして","m":"Masih, tetap seperti dulu","h":[]},{"id":147,"k":"帰依","r":"きえ","m":"Memeluk agama dengan taat, pindah keyakinan","h":[]},{"id":148,"k":"依頼者","r":"いらいしゃ","m":"Klien, pemohon","h":[]},{"id":149,"k":"汚い","r":"きたない","m":"Kotor, jorok; berantakan, jelek (mis. tulisan tangan)","h":[]},{"id":150,"k":"汚れ","r":"よごれ","m":"Kotoran, noda, bercak","h":[]},{"id":151,"k":"汚染","r":"おせん","m":"Pencemaran, kontaminasi","h":[]},{"id":152,"k":"汚れる","r":"よごれる","m":"Menjadi kotor; ternoda, rusak (nama baik)","h":[]},{"id":153,"k":"汚職","r":"おしょく","m":"Korupsi, penyalahgunaan jabatan","h":[]},{"id":154,"k":"汚す","r":"よごす","m":"Mencemari, mengotori; menodai","h":[]},{"id":155,"k":"互い","r":"たがい","m":"Satu sama lain, saling","h":[]},{"id":156,"k":"互いに","r":"たがいに","m":"Saling, bersama-sama, timbal balik","h":[]},{"id":157,"k":"相互","r":"そうご","m":"Saling, timbal balik","h":[]},{"id":158,"k":"交互","r":"こうご","m":"Bergantian, bergilir; saling","h":[["口語","Bahasa lisan"]]},{"id":159,"k":"互角","r":"ごかく","m":"Seimbang, setara kekuatan, sebanding","h":[]},{"id":160,"k":"互換","r":"ごかん","m":"Pertukaran; saling menggantikan; kompatibel (mis. PC)","h":[["五感","Lima indra"],["語感","Nuansa kata"]]},{"id":161,"k":"恵","r":"え","m":"Kebijaksanaan, pencerahan; prajna (salah satu dari tiga bagian Jalan Berunsur Delapan)","h":[["絵","Gambar"],["江","Teluk kecil"],["柄","Gagang"]]},{"id":162,"k":"恵み","r":"めぐみ","m":"Berkah, karunia","h":[]},{"id":163,"k":"知恵","r":"ちえ","m":"Kebijaksanaan, kecerdikan, akal, kecerdasan","h":[]},{"id":164,"k":"恩恵","r":"おんけい","m":"Karunia, kebaikan, manfaat","h":[]},{"id":165,"k":"最恵国","r":"さいけいこく","m":"Negara paling diistimewakan (MFN)","h":[]},{"id":166,"k":"逃げ","r":"にげ","m":"Pelarian, penghindaran","h":[]},{"id":167,"k":"見逃す","r":"みのがす","m":"Melewatkan, tidak menyadari; membiarkan lolos","h":[]},{"id":168,"k":"逃げる","r":"にげる","m":"Melarikan diri, kabur","h":[]},{"id":169,"k":"逃走","r":"とうそう","m":"Pelarian, kabur, desersi","h":[]},{"id":170,"k":"逃れる","r":"のがれる","m":"Melarikan diri, terhindar","h":[]},{"id":171,"k":"傾き","r":"かたむき","m":"Kemiringan, lereng; kecenderungan, bakat; gradien","h":[]},{"id":172,"k":"傾向","r":"けいこう","m":"Kecenderungan, tren","h":[["蛍光","Fluoresen"],["経口","Lewat mulut"],["携行","Membawa serta"]]},{"id":173,"k":"傾斜","r":"けいしゃ","m":"Kemiringan, lereng, kelandaian","h":[]},{"id":174,"k":"傾注","r":"けいちゅう","m":"Mencurahkan (perhatian, tenaga), berkonsentrasi pada","h":[]},{"id":175,"k":"右傾","r":"うけい","m":"Condong ke kanan; kecenderungan politik sayap kanan","h":[]},{"id":176,"k":"一緒","r":"いっしょ","m":"Bersama-sama; pada saat yang sama; sama, identik","h":[]},{"id":177,"k":"情緒","r":"じょうちょ","m":"Emosi, perasaan; suasana hati, atmosfer","h":[]},{"id":178,"k":"糸口","r":"いとぐち","m":"Awal, permulaan; petunjuk, benang merah; ujung benang","h":[]},{"id":179,"k":"緒","r":"お","m":"Tali, tali pengikat; senar (alat musik, busur)","h":[["尾","Ekor"],["雄","Jantan"]]},{"id":180,"k":"由緒","r":"ゆいしょ","m":"Sejarah, asal-usul, garis keturunan","h":[]},{"id":181,"k":"駐車","r":"ちゅうしゃ","m":"Parkir (mobil)","h":[["注射","Suntikan"]]},{"id":182,"k":"駐車場","r":"ちゅうしゃじょう","m":"Tempat parkir, area parkir","h":[]},{"id":183,"k":"駐在","r":"ちゅうざい","m":"Tinggal, bertugas, ditempatkan (di luar negeri)","h":[]},{"id":184,"k":"駐日","r":"ちゅうにち","m":"Menetap di Jepang","h":[]},{"id":185,"k":"進駐","r":"しんちゅう","m":"Pendudukan, penempatan pasukan","h":[["真鍮","Kuningan"]]},{"id":186,"k":"自己紹介","r":"じこしょうかい","m":"Perkenalan diri","h":[]},{"id":187,"k":"紹介状","r":"しょうかいじょう","m":"Surat pengantar, surat perkenalan","h":[]},{"id":188,"k":"紹介者","r":"しょうかいしゃ","m":"Orang yang memperkenalkan, pemberi referensi","h":[]},{"id":189,"k":"承継","r":"しょうけい","m":"Pewarisan, suksesi, penerusan","h":[["小計","Subtotal"],["象形","Piktograf"]]},{"id":190,"k":"紹介文","r":"しょうかいぶん","m":"Tulisan pengantar, esai pengantar","h":[]},{"id":191,"k":"雇う","r":"やとう","m":"Mempekerjakan; menyewa, mencarter","h":[]},{"id":192,"k":"雇い","r":"やとい","m":"Karyawan, pekerjaan","h":[]},{"id":193,"k":"雇用","r":"こよう","m":"Pekerjaan, ketenagakerjaan","h":[]},{"id":194,"k":"解雇","r":"かいこ","m":"Pemecatan, pemutusan hubungan kerja","h":[["回顧","Kenangan"],["懐古","Nostalgia"],["蚕","Ulat sutra"]]},{"id":195,"k":"雇い主","r":"やといぬし","m":"Majikan, pemberi kerja","h":[]},{"id":196,"k":"代わり","r":"かわり","m":"Pengganti, penggantian; wakil, cadangan; sebagai imbalan","h":[["変わり","Perubahan"]]},{"id":197,"k":"代替","r":"だいたい","m":"Penggantian; alternatif, pengganti","h":[["大体","Kurang lebih"],["大腿","Paha"]]},{"id":198,"k":"為替","r":"かわせ","m":"Wesel, cek; pertukaran (mata uang asing)","h":[]},{"id":199,"k":"交代","r":"こうたい","m":"Pergantian, giliran, shift, pergantian pemain","h":[["後退","Mundur"],["抗体","Antibodi"]]},{"id":200,"k":"両替","r":"りょうがえ","m":"Penukaran uang, kurs","h":[]},{"id":201,"k":"贈る","r":"おくる","m":"Memberikan (hadiah), menyampaikan; menganugerahkan","h":[["送る","Mengirim"]]},{"id":202,"k":"贈り物","r":"おくりもの","m":"Hadiah, kado","h":[]},{"id":203,"k":"寄贈","r":"きぞう","m":"Sumbangan, donasi, pemberian","h":[["偽造","Pemalsuan"]]},{"id":204,"k":"贈収賄","r":"ぞうしゅうわい","m":"Penyuapan, korupsi","h":[]},{"id":205,"k":"贈呈","r":"ぞうてい","m":"Penyerahan, pemberian (mis. hadiah)","h":[]},{"id":206,"k":"薄い","r":"うすい","m":"Tipis; pucat, samar; encer; hambar; sedikit (kasih sayang)","h":[]},{"id":207,"k":"薄暗い","r":"うすぐらい","m":"Remang-remang, suram","h":[]},{"id":208,"k":"薄","r":"すすき","m":"Rumput pampas Jepang (susuki)","h":[]},{"id":209,"k":"軽薄","r":"けいはく","m":"Ringan, sembrono, dangkal, tidak tulus","h":[]},{"id":210,"k":"希薄","r":"きはく","m":"Tipis (udara), encer (cairan), jarang (penduduk); kurang (semangat)","h":[["気迫","Semangat"]]},{"id":211,"k":"奥","r":"おく","m":"Bagian dalam, kedalaman (mis. hutan), belakang (rumah, laci)","h":[["億","Seratus juta"],["置く","Meletakkan"]]},{"id":212,"k":"奥行き","r":"おくゆき","m":"Kedalaman, panjang (ruangan)","h":[]},{"id":213,"k":"奥様","r":"おくさま","m":"Istri (orang lain), nyonya, ibu","h":[]},{"id":214,"k":"奥山","r":"おくやま","m":"Gunung terpencil, pedalaman gunung","h":[]},{"id":215,"k":"奥の手","r":"おくのて","m":"Kartu as, senjata andalan, jalan terakhir; keahlian rahasia","h":[]},{"id":216,"k":"詰まり","r":"つまり","m":"Dengan kata lain, yaitu; singkatnya","h":[]},{"id":217,"k":"詰まる","r":"つまる","m":"Penuh sesak, padat; tersumbat (jalan, pipa); terjepit","h":[]},{"id":218,"k":"見つめる","r":"みつめる","m":"Menatap, memandang lekat-lekat","h":[]},{"id":219,"k":"缶詰","r":"かんづめ","m":"Makanan kalengan; terkurung di suatu tempat (agar fokus bekerja)","h":[]},{"id":220,"k":"大詰め","r":"おおづめ","m":"Babak akhir, penutup, klimaks","h":[]},{"id":221,"k":"双子","r":"ふたご","m":"Anak kembar","h":[]},{"id":222,"k":"双","r":"そう","m":"Pasangan, sepasang","h":[["層","Lapisan"],["僧","Biksu"],["草","Rumput"]]},{"id":223,"k":"双方","r":"そうほう","m":"Kedua belah pihak, kedua sisi","h":[["相方","Rekan"]]},{"id":224,"k":"双葉","r":"ふたば","m":"Daun biji (kotiledon), tunas; tahap awal","h":[]},{"id":225,"k":"双生児","r":"そうせいじ","m":"Anak kembar","h":[]},{"id":226,"k":"茨","r":"いばら","m":"Semak berduri; mawar liar; duri","h":[]},{"id":227,"k":"荊棘","r":"けいきょく","m":"Mawar liar, semak duri; rintangan, sumber kesulitan","h":[]},{"id":228,"k":"棘皮動物","r":"きょくひどうぶつ","m":"Hewan berkulit duri (Echinodermata)","h":[]},{"id":229,"k":"刺激","r":"しげき","m":"Rangsangan, stimulasi, iritasi; dorongan, pemicu","h":[["史劇","Drama sejarah"]]},{"id":230,"k":"刺","r":"とげ","m":"Duri; serpihan (yang menancap di kulit)","h":[]},{"id":231,"k":"刺す","r":"さす","m":"Menusuk, menikam; menyengat, menggigit; menjahit","h":[["差す","Menyorotkan, memasukkan"],["指す","Menunjuk"]]},{"id":232,"k":"名刺","r":"めいし","m":"Kartu nama","h":[["名詞","Kata benda"]]},{"id":233,"k":"刺身","r":"さしみ","m":"Sashimi (ikan mentah yang diiris)","h":[]},{"id":234,"k":"至る","r":"いたる","m":"Sampai di, tiba pada (keputusan); mencapai; mengarah ke","h":[]},{"id":235,"k":"到着","r":"とうちゃく","m":"Kedatangan, tiba","h":[]},{"id":236,"k":"到達","r":"とうたつ","m":"Pencapaian, tiba, sampai","h":[]},{"id":237,"k":"到来","r":"とうらい","m":"Kedatangan, datangnya (sesuatu yang ditunggu)","h":[]},{"id":238,"k":"到底","r":"とうてい","m":"(Tidak mungkin) sama sekali, mustahil","h":[]},{"id":239,"k":"寝る","r":"ねる","m":"Tidur; berbaring; pergi tidur","h":[["練る","Mengolah, menyusun"]]},{"id":240,"k":"寝","r":"ね","m":"Tidur","h":[["根","Akar"],["音","Suara"],["値","Harga"]]},{"id":241,"k":"寝台","r":"しんだい","m":"Tempat tidur, dipan","h":[["身代","Harta kekayaan"]]},{"id":242,"k":"寝室","r":"しんしつ","m":"Kamar tidur","h":[["心室","Bilik jantung"]]},{"id":243,"k":"昼寝","r":"ひるね","m":"Tidur siang, siesta","h":[]},{"id":244,"k":"壁","r":"かべ","m":"Dinding, sekat; penghalang, rintangan","h":[]},{"id":245,"k":"壁紙","r":"かべがみ","m":"Kertas dinding; gambar latar (wallpaper)","h":[]},{"id":246,"k":"壁画","r":"へきが","m":"Lukisan dinding, mural","h":[]},{"id":247,"k":"岸壁","r":"がんぺき","m":"Dermaga, pelabuhan; tebing pantai","h":[]},{"id":248,"k":"障壁","r":"しょうへき","m":"Dinding pembatas, pagar; rintangan, penghalang","h":[]},{"id":249,"k":"盗む","r":"ぬすむ","m":"Mencuri; menjiplak; mencuri (teknik) dengan mengamati","h":[]},{"id":250,"k":"強盗","r":"ごうとう","m":"Perampok, pencopet; perampokan","h":[]},{"id":251,"k":"盗難","r":"とうなん","m":"Pencurian, perampokan","h":[["東南","Tenggara"]]},{"id":252,"k":"盗み","r":"ぬすみ","m":"Pencurian","h":[]},{"id":253,"k":"窃盗","r":"せっとう","m":"Pencurian, pencurian kecil","h":[]},{"id":254,"k":"悩み","r":"なやみ","m":"Masalah, kekhawatiran, kesusahan, penderitaan","h":[]},{"id":255,"k":"悩む","r":"なやむ","m":"Merasa khawatir, bermasalah","h":[]},{"id":256,"k":"苦悩","r":"くのう","m":"Penderitaan (batin), kesedihan mendalam","h":[]},{"id":257,"k":"伸び悩む","r":"のびなやむ","m":"Stagnan, kurang berkembang, tidak maju","h":[]},{"id":258,"k":"煩悩","r":"ぼんのう","m":"Hawa nafsu, nafsu duniawi, keinginan daging","h":[]},{"id":259,"k":"お前","r":"おまえ","m":"Kamu (kasar); di hadapan (dewa, bangsawan)","h":[]},{"id":260,"k":"お茶","r":"おちゃ","m":"Teh (biasanya hijau); rehat minum teh; upacara minum teh","h":[]},{"id":261,"k":"ご覧","r":"ごらん","m":"Silakan lihat, coba (lihat); melihat, menonton","h":[]},{"id":262,"k":"お父さん","r":"おとうさん","m":"Ayah, bapak; suami; kamu (kepada laki-laki)","h":[]},{"id":263,"k":"荒れる","r":"あれる","m":"Menjadi badai, bergelora (laut); terbengkalai, rusak","h":[]},{"id":264,"k":"荒い","r":"あらい","m":"Kasar, liar, keras, ganas; berat (napas); boros","h":[["粗い","Kasar"],["洗い","Cucian"]]},{"id":265,"k":"荒野","r":"こうや","m":"Tanah tandus, padang liar, gurun","h":[["紺屋","Tukang celup"]]},{"id":266,"k":"荒っぽい","r":"あらっぽい","m":"Kasar, galak; ceroboh, kasar (pekerjaan)","h":[]},{"id":267,"k":"荒木","r":"あらき","m":"Kayu gelondongan berkulit, kayu mentah","h":[]},{"id":268,"k":"硬い","r":"かたい","m":"Keras, padat, kokoh; kaku, canggung; teguh","h":[["固い","Keras, kokoh"],["堅い","Teguh"]]},{"id":269,"k":"強硬","r":"きょうこう","m":"Keras, tegas, tak kenal kompromi, garis keras","h":[["強行","Memaksakan"],["恐慌","Panik, krisis"],["凶行","Tindak kejahatan"]]},{"id":270,"k":"硬化","r":"こうか","m":"Pengerasan, vulkanisasi; mengerasnya sikap","h":[["効果","Efek"],["高価","Mahal"],["校歌","Lagu sekolah"]]},{"id":271,"k":"硬さ","r":"かたさ","m":"Kekerasan, kekakuan, keteguhan","h":[]},{"id":272,"k":"埋める","r":"うめる","m":"Mengubur; mengisi penuh; menutup (kekurangan)","h":[]},{"id":273,"k":"埋め立て","r":"うめたて","m":"Reklamasi lahan","h":[]},{"id":274,"k":"埋蔵","r":"まいぞう","m":"Terkubur di dalam tanah; cadangan bawah tanah","h":[]},{"id":275,"k":"穴埋め","r":"あなうめ","m":"Menambal lubang; menutup kekosongan, pengganti sementara","h":[]},{"id":276,"k":"埋もれる","r":"うもれる","m":"Terkubur, tertutup, tersembunyi","h":[]},{"id":277,"k":"袋","r":"ふくろ","m":"Tas, kantong, karung; kulit jeruk; jalan buntu","h":[]},{"id":278,"k":"手袋","r":"てぶくろ","m":"Sarung tangan","h":[]},{"id":279,"k":"袋小路","r":"ふくろこうじ","m":"Gang buntu, jalan buntu; kebuntuan","h":[]},{"id":280,"k":"足袋","r":"たび","m":"Tabi, kaus kaki Jepang (dengan jari terbelah)","h":[["旅","Perjalanan"],["度","Kali, derajat"]]},{"id":281,"k":"紙袋","r":"かみぶくろ","m":"Kantong kertas","h":[]},{"id":282,"k":"吹き出す","r":"ふきだす","m":"Menyembur keluar; bertunas; tertawa terbahak-bahak","h":[]},{"id":283,"k":"吹雪","r":"ふぶき","m":"Badai salju","h":[]},{"id":284,"k":"吹き込む","r":"ふきこむ","m":"Meniup ke dalam; menanamkan (gagasan); merekam (musik, suara)","h":[]},{"id":285,"k":"息吹","r":"いぶき","m":"Napas; tanda-tanda (musim semi, sesuatu yang baru)","h":[]},{"id":286,"k":"吹かす","r":"ふかす","m":"Mengisap (rokok, pipa); menggeber (mesin); berlagak","h":[["蒸かす","Mengukus"]]},{"id":287,"k":"封","r":"ふう","m":"Segel","h":[["風","Angin"]]},{"id":288,"k":"封筒","r":"ふうとう","m":"Amplop","h":[]},{"id":289,"k":"封鎖","r":"ふうさ","m":"Blokade, penutupan wilayah (lockdown); pembekuan dana","h":[]},{"id":290,"k":"同封","r":"どうふう","m":"Melampirkan (mis. dalam surat)","h":[]},{"id":291,"k":"封建","r":"ほうけん","m":"Bersifat feodal","h":[["宝剣","Pedang pusaka"]]},{"id":292,"k":"娘","r":"むすめ","m":"Anak perempuan; gadis","h":[]},{"id":293,"k":"嬢","r":"じょう","m":"Nona, gadis (belum menikah); imbuhan \"-wati\"","h":[["情","Perasaan"],["錠","Kunci"],["丈","Tinggi"]]},{"id":294,"k":"孫娘","r":"まごむすめ","m":"Cucu perempuan","h":[]},{"id":295,"k":"一人娘","r":"ひとりむすめ","m":"Anak perempuan satu-satunya","h":[]},{"id":296,"k":"娘婿","r":"むすめむこ","m":"Menantu laki-laki","h":[]},{"id":297,"k":"賢い","r":"かしこい","m":"Bijak, pintar, cerdas; penurut (anak, hewan)","h":[]},{"id":298,"k":"賢人","r":"けんじん","m":"Orang bijak, orang berbudi; sake kasar","h":[["県人","Orang sepropinsi"]]},{"id":299,"k":"賢明","r":"けんめい","m":"Bijaksana, masuk akal, cerdas, berhati-hati","h":[["懸命","Sekuat tenaga"]]},{"id":300,"k":"賢母","r":"けんぼ","m":"Ibu yang bijak","h":[]},{"id":301,"k":"賢者","r":"けんじゃ","m":"Orang bijak, cendekiawan","h":[]},{"id":302,"k":"腕","r":"うで","m":"Lengan; keterampilan, kemampuan","h":[]},{"id":303,"k":"腕時計","r":"うでどけい","m":"Jam tangan","h":[]},{"id":304,"k":"腕前","r":"うでまえ","m":"Kemampuan, keahlian, kecakapan","h":[]},{"id":305,"k":"手腕","r":"しゅわん","m":"Kemampuan, kecakapan, keahlian","h":[]},{"id":306,"k":"右腕","r":"みぎうで","m":"Lengan kanan; tangan kanan (orang kepercayaan); pelempar tangan kanan","h":[]},{"id":307,"k":"比べ","r":"くらべ","m":"Pertandingan, perbandingan, persaingan","h":[]},{"id":308,"k":"比較的","r":"ひかくてき","m":"Secara relatif, agak, cukup","h":[]},{"id":309,"k":"見比べる","r":"みくらべる","m":"Membandingkan dengan mata","h":[]},{"id":310,"k":"校正","r":"こうせい","m":"Pemeriksaan naskah (proofreading); kalibrasi","h":[["更生","Rehabilitasi"],["構成","Susunan"],["公正","Adil"]]},{"id":311,"k":"比較にならない","r":"ひかくにならない","m":"Tidak ada bandingannya, tidak sebanding","h":[]},{"id":312,"k":"床","r":"とこ","m":"Tempat tidur, kasur; ranjang sakit; alas, dasar sungai; relung","h":[]},{"id":313,"k":"起床","r":"きしょう","m":"Bangun tidur","h":[["気象","Cuaca"],["希少","Langka"],["帰省","Pulang kampung"]]},{"id":314,"k":"床","r":"ショウ","m":"Tempat tidur, satuan untuk tempat tidur; lantai, alas","h":[["省","Kementerian"],["章","Bab"],["商","Perdagangan"]]},{"id":315,"k":"床","r":"ゆか","m":"Lantai; panggung; teras makan yang dibangun di atas sungai","h":[]},{"id":316,"k":"臨床","r":"りんしょう","m":"Klinis (mis. patologi, fisiologi)","h":[["輪唱","Nyanyian bersahutan"]]},{"id":317,"k":"床の間","r":"とこのま","m":"Tokonoma (ceruk untuk memajang seni atau bunga)","h":[]},{"id":318,"k":"柔らかい","r":"やわらかい","m":"Lembut, empuk, lentur, luwes; ramah, santai","h":[]},{"id":319,"k":"柔道","r":"じゅうどう","m":"Judo","h":[]},{"id":320,"k":"柔らか","r":"やわらか","m":"Lembut, empuk, lentur; halus (warna, cahaya), ramah","h":[]},{"id":321,"k":"柔軟","r":"じゅうなん","m":"Fleksibel, lentur, luwes","h":[]},{"id":322,"k":"優柔不断","r":"ゆうじゅうふだん","m":"Ragu-ragu, tidak tegas, plin-plan","h":[]},{"id":323,"k":"殿様","r":"とのさま","m":"Bangsawan, tokoh terhormat; penguasa feodal (daimyo)","h":[]},{"id":324,"k":"殿下","r":"でんか","m":"Yang Mulia (Pangeran)","h":[["電化","Elektrifikasi"],["電荷","Muatan listrik"]]},{"id":325,"k":"殿堂","r":"でんどう","m":"Istana, aula, kuil; hall of fame","h":[["伝導","Konduksi"],["電動","Bertenaga listrik"],["伝道","Dakwah"]]},{"id":326,"k":"妃殿下","r":"ひでんか","m":"Putri, Yang Mulia Putri","h":[]},{"id":327,"k":"神殿","r":"しんでん","m":"Kuil, tempat suci","h":[]},{"id":328,"k":"濃い","r":"こい","m":"Pekat, gelap (warna); kuat (rasa, bau); kental, padat","h":[["恋","Cinta"],["鯉","Ikan koi"],["故意","Kesengajaan"]]},{"id":329,"k":"濃縮","r":"のうしゅく","m":"Pemekatan, pengayaan, kondensasi","h":[]},{"id":330,"k":"濃度","r":"のうど","m":"Konsentrasi, kepadatan; kardinalitas","h":[]},{"id":331,"k":"濃霧","r":"のうむ","m":"Kabut tebal","h":[]},{"id":332,"k":"肩","r":"かた","m":"Bahu","h":[["型","Bentuk, tipe"],["方","Pihak, arah"],["片","Satu sisi"]]},{"id":333,"k":"肩書き","r":"かたがき","m":"Gelar, jabatan; titel","h":[]},{"id":334,"k":"肩代わり","r":"かたがわり","m":"Mengambil alih utang orang lain, menanggung beban orang lain","h":[]},{"id":335,"k":"肩身","r":"かたみ","m":"Bahu, badan; kehormatan, muka","h":[["形見","Kenang-kenangan"]]},{"id":336,"k":"肩こり","r":"かたこり","m":"Bahu kaku, leher kaku","h":[]},{"id":337,"k":"零","r":"れい","m":"Nol","h":[["例","Contoh"],["礼","Hormat"],["霊","Roh"]]},{"id":338,"k":"０","r":"ゼロ","m":"Nol, 0; tidak ada","h":[]},{"id":339,"k":"零細","r":"れいさい","m":"Sepele, kecil, tidak berarti (industri rumahan, perusahaan kecil)","h":[]},{"id":340,"k":"零時","r":"れいじ","m":"Pukul 12 (tengah malam, tengah hari)","h":[["例示","Ilustrasi"]]},{"id":341,"k":"零点","r":"れいてん","m":"Nol (nilai), tidak ada nilai; titik nol; nol derajat (Celsius)","h":[]},{"id":342,"k":"怒り","r":"いかり","m":"Kemarahan, murka, amarah","h":[["錨","Jangkar"]]},{"id":343,"k":"怒る","r":"おこる","m":"Marah, naik darah; menegur, memarahi; menjadi bersudut","h":[["起こる","Terjadi"],["興る","Bangkit"]]},{"id":344,"k":"怒鳴る","r":"どなる","m":"Membentak, berteriak (karena marah)","h":[]},{"id":345,"k":"怒らせる","r":"おこらせる","m":"Membuat marah, menyinggung, memprovokasi","h":[]},{"id":346,"k":"怒気","r":"どき","m":"Kemarahan, amarah","h":[["土器","Tembikar"]]},{"id":347,"k":"宿","r":"やど","m":"Penginapan, hotel; rumah, tempat tinggal","h":[]},{"id":348,"k":"宿泊","r":"しゅくはく","m":"Penginapan, akomodasi","h":[]},{"id":349,"k":"下宿","r":"げしゅく","m":"Indekos, kos; rumah kos","h":[]},{"id":350,"k":"宿題","r":"しゅくだい","m":"Pekerjaan rumah, tugas; masalah yang belum selesai","h":[]},{"id":351,"k":"合宿","r":"がっしゅく","m":"Menginap bersama, kamp pelatihan, rumah kos","h":[]},{"id":352,"k":"一杯","r":"いっぱい","m":"Satu cangkir (gelas, mangkuk); penuh; sebuah (cangkir/gelas)","h":[]},{"id":353,"k":"杯","r":"さかずき","m":"Cawan sake, cawan minuman beralkohol","h":[]},{"id":354,"k":"乾杯","r":"かんぱい","m":"Bersulang, bersulang untuk merayakan","h":[["完敗","Kekalahan telak"]]},{"id":355,"k":"祝杯","r":"しゅくはい","m":"Bersulang perayaan, cawan ucapan selamat","h":[]},{"id":356,"k":"銀杯","r":"ぎんぱい","m":"Piala perak","h":[]},{"id":357,"k":"甘い","r":"あまい","m":"Manis, bergula; harum; lunak, longgar; terlalu optimis","h":[]},{"id":358,"k":"上手い","r":"うまい","m":"Pandai, terampil, ahli; cerdik, tepat; lezat","h":[["美味い","Lezat"]]},{"id":359,"k":"甘味","r":"あまみ","m":"Rasa manis; makanan manis, hidangan penutup","h":[]},{"id":360,"k":"甘え","r":"あまえ","m":"Ketergantungan pada orang lain, manja","h":[]},{"id":361,"k":"甘言","r":"かんげん","m":"Kata-kata manis, rayuan, bujukan, sanjungan","h":[["換言","Dengan kata lain"],["諫言","Nasihat tegas"],["管弦","Musik orkestra"]]},{"id":362,"k":"清掃","r":"せいそう","m":"Pembersihan, kebersihan; pengumpulan sampah","h":[["正装","Busana resmi"],["盛装","Busana lengkap"],["政争","Pertikaian politik"]]},{"id":363,"k":"一掃","r":"いっそう","m":"Pembersihan total, penghapusan, pemberantasan","h":[["一層","Lebih lagi"]]},{"id":364,"k":"大掃除","r":"おおそうじ","m":"Bersih-bersih besar, bersih-bersih menyeluruh","h":[]},{"id":365,"k":"掃海","r":"そうかい","m":"Penyapuan ranjau laut","h":[["爽快","Menyegarkan"],["総会","Rapat umum"]]},{"id":366,"k":"掘り出す","r":"ほりだす","m":"Menggali keluar; menemukan secara kebetulan","h":[]},{"id":367,"k":"発掘","r":"はっくつ","m":"Penggalian, ekskavasi; penemuan (fakta, bakat baru)","h":[]},{"id":368,"k":"採掘","r":"さいくつ","m":"Penambangan","h":[]},{"id":369,"k":"掘削","r":"くっさく","m":"Penggalian, pengeboran","h":[]},{"id":370,"k":"掘り出し物","r":"ほりだしもの","m":"Barang temuan (beruntung), barang murah, harta karun","h":[]},{"id":371,"k":"疲れ","r":"つかれ","m":"Kelelahan, capek","h":[]},{"id":372,"k":"疲労","r":"ひろう","m":"Kelelahan, keletihan, kepayahan","h":[["披露","Pengumuman, pamer"]]},{"id":373,"k":"疲れる","r":"つかれる","m":"Menjadi lelah, capek, letih","h":[]},{"id":374,"k":"疲れ果てる","r":"つかれはてる","m":"Kehabisan tenaga, kelelahan total","h":[]},{"id":375,"k":"疲弊","r":"ひへい","m":"Kelelahan; kemiskinan, kehancuran (finansial)","h":[]},{"id":376,"k":"皆","r":"みんな","m":"Semua orang; segalanya, semuanya","h":[]},{"id":377,"k":"皆さん","r":"みなさん","m":"Semuanya, hadirin sekalian","h":[]},{"id":378,"k":"皆様","r":"みなさま","m":"Semuanya, hadirin sekalian (sangat hormat)","h":[]},{"id":379,"k":"皆目","r":"かいもく","m":"Sama sekali, (tidak) sedikit pun","h":[]},{"id":380,"k":"皆無","r":"かいむ","m":"Tidak ada sama sekali, nihil","h":[]},{"id":381,"k":"軟化","r":"なんか","m":"Pelunakan; melunaknya sikap; melemahnya pasar","h":[["南下","Turun ke selatan"]]},{"id":382,"k":"軟骨","r":"なんこつ","m":"Tulang rawan; nankotsu (hidangan tulang rawan ayam goreng)","h":[]},{"id":383,"k":"軟弱","r":"なんじゃく","m":"Kelemahan, sikap lemah","h":[]},{"id":384,"k":"軟","r":"なん","m":"Lunak, lembek","h":[["難","Kesulitan"],["南","Selatan"],["男","Laki-laki"]]},{"id":385,"k":"軟禁","r":"なんきん","m":"Tahanan rumah","h":[["南京","Nanjing"]]},{"id":386,"k":"沈む","r":"しずむ","m":"Tenggelam, terbenam; turun (matahari); merasa murung","h":[]},{"id":387,"k":"沈黙","r":"ちんもく","m":"Keheningan, diam; sikap pendiam","h":[]},{"id":388,"k":"沈着","r":"ちんちゃく","m":"Pengendapan, pigmentasi; ketenangan, kepala dingin","h":[]},{"id":389,"k":"沈下","r":"ちんか","m":"Penurunan tanah, amblesan","h":[["鎮火","Pemadaman api"]]},{"id":390,"k":"沈静","r":"ちんせい","m":"Ketenangan, kesunyian, kelesuan","h":[["鎮静","Penenangan, sedasi"]]},{"id":391,"k":"氷","r":"こおり","m":"Es; es serut (dengan sirup)","h":[["凍り","Pembekuan"]]},{"id":392,"k":"凍結","r":"とうけつ","m":"Pembekuan (air); pembekuan (harga, gaji, aset); penangguhan","h":[]},{"id":393,"k":"冷凍","r":"れいとう","m":"Pembekuan, penyimpanan dingin, pendinginan","h":[]},{"id":394,"k":"凍る","r":"こおる","m":"Membeku, tertutup es, menggumpal","h":[]},{"id":395,"k":"凍死","r":"とうし","m":"Mati kedinginan, mati membeku","h":[["投資","Investasi"],["闘志","Semangat juang"],["透視","Penglihatan tembus"]]},{"id":396,"k":"煙","r":"けむり","m":"Asap, uap","h":[]},{"id":397,"k":"喫煙","r":"きつえん","m":"Merokok","h":[]},{"id":398,"k":"花火","r":"はなび","m":"Kembang api","h":[]},{"id":399,"k":"恋","r":"こい","m":"Cinta (romantis)","h":[["濃い","Pekat, kuat"],["鯉","Ikan koi"],["故意","Kesengajaan"]]},{"id":400,"k":"恋愛","r":"れんあい","m":"Cinta, percintaan, gairah, kasih sayang","h":[]},{"id":401,"k":"恋人","r":"こいびと","m":"Kekasih, pacar","h":[]},{"id":402,"k":"失恋","r":"しつれん","m":"Patah hati, cinta bertepuk sebelah tangan","h":[]},{"id":403,"k":"恋しい","r":"こいしい","m":"Dirindukan, dikangeni","h":[]},{"id":404,"k":"郊外","r":"こうがい","m":"Pinggiran kota, kawasan permukiman di luar kota","h":[["公害","Polusi"],["校外","Luar sekolah"],["口外","Membocorkan"]]},{"id":405,"k":"近郊","r":"きんこう","m":"Pinggiran, sekitar kota, daerah sekitar","h":[["均衡","Keseimbangan"]]},{"id":406,"k":"北郊","r":"ほっこう","m":"Pinggiran kota bagian utara","h":[]},{"id":407,"k":"南郊","r":"なんこう","m":"Pinggiran kota bagian selatan","h":[["軟膏","Salep"]]},{"id":408,"k":"郊外電車","r":"こうがいでんしゃ","m":"Kereta pinggiran kota","h":[]},{"id":409,"k":"腰","r":"こし","m":"Pinggang, punggung bawah; pinggul; keuletan (rambut, mi, kertas)","h":[["輿","Tandu"],["越し","Melewati"]]},{"id":410,"k":"本腰","r":"ほんごし","m":"Usaha keras, kesungguhan","h":[]},{"id":411,"k":"足腰","r":"あしこし","m":"Kaki dan pinggang","h":[]},{"id":412,"k":"物腰","r":"ものごし","m":"Sikap, perilaku, gerak-gerik","h":[]},{"id":413,"k":"弱腰","r":"よわごし","m":"Sikap lemah","h":[]},{"id":414,"k":"踊り","r":"おどり","m":"Tarian","h":[]},{"id":415,"k":"踊り場","r":"おどりば","m":"Aula dansa, lantai dansa; bordes (tangga); masa mendatar (mis. ekonomi)","h":[]},{"id":416,"k":"舞踊","r":"ぶよう","m":"Tarian, dansa","h":[["無用","Tidak perlu"],["武勇","Keberanian"]]},{"id":417,"k":"盆踊り","r":"ぼんおどり","m":"Tarian Obon (festival leluhur)","h":[]},{"id":418,"k":"踊り子","r":"おどりこ","m":"Penari (biasanya perempuan)","h":[]},{"id":419,"k":"眠り","r":"ねむり","m":"Tidur; ketidakaktifan; kematian","h":[]},{"id":420,"k":"睡眠","r":"すいみん","m":"Tidur","h":[]},{"id":421,"k":"不眠","r":"ふみん","m":"Susah tidur, insomnia","h":[]},{"id":422,"k":"眠い","r":"ねむい","m":"Mengantuk","h":[]},{"id":423,"k":"眠る","r":"ねむる","m":"Tidur; beristirahat (dengan damai), terkubur","h":[]},{"id":424,"k":"怖い","r":"こわい","m":"Menakutkan, seram, mengerikan","h":[]},{"id":425,"k":"怖がる","r":"こわがる","m":"Takut pada, merasa ngeri, gugup","h":[]},{"id":426,"k":"恐怖症","r":"きょうふしょう","m":"Fobia, ketakutan yang tidak wajar","h":[]},{"id":427,"k":"畏怖","r":"いふ","m":"Rasa takjub dan takut, kegentaran","h":[]},{"id":428,"k":"珍しい","r":"めずらしい","m":"Langka, tidak biasa, aneh; baru, unik","h":[]},{"id":429,"k":"珍","r":"ちん","m":"Langka; aneh, ganjil","h":[["賃","Upah"],["狆","Anjing chin"]]},{"id":430,"k":"珍味","r":"ちんみ","m":"Makanan lezat yang langka, santapan istimewa","h":[]},{"id":431,"k":"珍重","r":"ちんちょう","m":"Menghargai tinggi, memuliakan","h":[]},{"id":432,"k":"珍品","r":"ちんぴん","m":"Barang antik, barang langka","h":[]},{"id":433,"k":"狭い","r":"せまい","m":"Sempit, terbatas, kecil; berpikiran sempit","h":[]},{"id":434,"k":"狭間","r":"はざま","m":"Celah, sela, ambang; lembah, jurang; celah tembok","h":[]},{"id":435,"k":"狭心症","r":"きょうしんしょう","m":"Angina pektoris, serangan jantung","h":[]},{"id":436,"k":"狭まる","r":"せばまる","m":"Menyempit, mengerut","h":[]},{"id":437,"k":"手狭","r":"てぜま","m":"Sempit, kecil, sesak","h":[]},{"id":438,"k":"喫茶店","r":"きっさてん","m":"Kedai kopi, kafe, kedai teh","h":[]},{"id":439,"k":"喫茶","r":"きっさ","m":"Minum teh; kedai teh, kedai kopi","h":[]},{"id":440,"k":"喫する","r":"きっする","m":"Makan, minum, merokok; menderita (kekalahan), menerima pukulan","h":[]},{"id":441,"k":"満喫","r":"まんきつ","m":"Menikmati sepuasnya (makanan, minuman)","h":[]},{"id":442,"k":"吃驚","r":"びっくり","m":"Terkejut, kaget, tercengang","h":[]},{"id":443,"k":"喫緊","r":"きっきん","m":"Mendesak, sangat mendesak","h":[]},{"id":444,"k":"溶かす","r":"とかす","m":"Melarutkan; melelehkan","h":[["梳かす","Menyisir"]]},{"id":445,"k":"溶岩","r":"ようがん","m":"Lava","h":[]},{"id":446,"k":"溶解","r":"ようかい","m":"Pelarutan; peleburan, pencairan, fusi","h":[["妖怪","Hantu, makhluk gaib"]]},{"id":447,"k":"雪解け","r":"ゆきどけ","m":"Pencairan salju","h":[]},{"id":448,"k":"溶け込む","r":"とけこむ","m":"Melebur ke dalam, berbaur dengan; menyatu dengan lingkungan","h":[]},{"id":449,"k":"涙","r":"なみだ","m":"Air mata; rasa simpati","h":[]},{"id":450,"k":"涙声","r":"なみだごえ","m":"Suara menangis, suara bergetar karena air mata","h":[]},{"id":451,"k":"涙ぐましい","r":"なみだぐましい","m":"Mengharukan, menyentuh hati, menyedihkan","h":[]},{"id":452,"k":"催涙","r":"さいるい","m":"Pemicu air mata (gas air mata)","h":[]},{"id":453,"k":"感涙","r":"かんるい","m":"Air mata haru, air mata terima kasih","h":[]},{"id":454,"k":"匹","r":"ひき","m":"Satuan untuk hewan kecil; satuan kain","h":[["引き","Penarikan"]]},{"id":455,"k":"匹敵","r":"ひってき","m":"Menandingi, menyamai, sebanding dengan","h":[]},{"id":456,"k":"一匹","r":"いっぴき","m":"Satu ekor (hewan kecil); satu gulung kain","h":[]},{"id":457,"k":"一匹狼","r":"いっぴきおおかみ","m":"Serigala penyendiri, orang yang mandiri","h":[]},{"id":458,"k":"匹夫","r":"ひっぷ","m":"Orang biasa, orang kasar, orang desa","h":[]},{"id":459,"k":"鋭い","r":"するどい","m":"Tajam (pisau), runcing; tajam (rasa sakit, komentar); jeli","h":[]},{"id":460,"k":"新鋭","r":"しんえい","m":"Muda dan energik, pendatang baru yang menjanjikan; produk baru unggulan","h":[["親衛","Pengawal pribadi"]]},{"id":461,"k":"鋭利","r":"えいり","m":"Tajam, tajam pikiran, runcing","h":[["営利","Komersial"]]},{"id":462,"k":"精鋭","r":"せいえい","m":"Elite, yang terbaik, pilihan","h":[]},{"id":463,"k":"気鋭","r":"きえい","m":"Bersemangat, enerjik","h":[]},{"id":464,"k":"塗る","r":"ぬる","m":"Mengecat, melapis, memoles; mengoleskan","h":[]},{"id":465,"k":"塗り替える","r":"ぬりかえる","m":"Mengecat ulang; memecahkan (rekor), menulis ulang","h":[]},{"id":466,"k":"塗装","r":"とそう","m":"Pengecatan, pelapisan","h":[]},{"id":467,"k":"黒塗り","r":"くろぬり","m":"Dicat hitam, dilapisi pernis hitam; disensor (dihitamkan)","h":[]},{"id":468,"k":"塗料","r":"とりょう","m":"Cat, bahan pelapis","h":[]},{"id":469,"k":"軒並み","r":"のきなみ","m":"Deretan rumah; setiap rumah; semuanya, serentak","h":[]},{"id":470,"k":"軒先","r":"のきさき","m":"Ujung atap, bagian depan rumah","h":[]},{"id":471,"k":"軒","r":"けん","m":"Satuan untuk bangunan (rumah); akhiran nama pena/panggung","h":[["剣","Pedang"],["犬","Anjing"],["県","Prefektur"]]},{"id":472,"k":"意気軒昂","r":"いきけんこう","m":"Bersemangat tinggi, riang gembira","h":[]},{"id":473,"k":"一軒家","r":"いっけんや","m":"Rumah tunggal terpisah; rumah terpencil","h":[]},{"id":474,"k":"叫ぶ","r":"さけぶ","m":"Berteriak, menjerit, menyerukan","h":[]},{"id":475,"k":"叫び","r":"さけび","m":"Teriakan, jeritan, seruan","h":[]},{"id":476,"k":"叫び声","r":"さけびごえ","m":"Teriakan, jeritan","h":[]},{"id":477,"k":"絶叫","r":"ぜっきょう","m":"Jeritan, teriakan, seruan keras","h":[]},{"id":478,"k":"喚く","r":"わめく","m":"Berteriak-teriak, menjerit, merengek","h":[]},{"id":479,"k":"乾燥","r":"かんそう","m":"Kekeringan, pengeringan, dehidrasi; kehambaran","h":[["感想","Kesan"],["完走","Menyelesaikan lari"],["間奏","Interlude"]]},{"id":480,"k":"乾電池","r":"かんでんち","m":"Baterai kering","h":[]},{"id":481,"k":"乾かす","r":"かわかす","m":"Mengeringkan (pakaian, dll.)","h":[]},{"id":482,"k":"乾季","r":"かんき","m":"Musim kemarau","h":[["換気","Ventilasi"],["歓喜","Kegembiraan"],["寒気","Hawa dingin"]]},{"id":483,"k":"飲み干す","r":"のみほす","m":"Menghabiskan minuman, meneguk habis","h":[]},{"id":484,"k":"祈り","r":"いのり","m":"Doa, permohonan","h":[]},{"id":485,"k":"祈る","r":"いのる","m":"Berdoa, mengharapkan","h":[]},{"id":486,"k":"祈願","r":"きがん","m":"Doa permohonan, harapan","h":[["奇岩","Batu aneh"]]},{"id":487,"k":"祈祷","r":"きとう","m":"Doa, doa sebelum makan; pengusiran roh jahat","h":[["気筒","Silinder mesin"]]},{"id":488,"k":"祈念","r":"きねん","m":"Doa, harapan","h":[["記念","Peringatan"]]},{"id":489,"k":"髪","r":"かみ","m":"Rambut (di kepala)","h":[["紙","Kertas"],["神","Dewa"],["上","Atas"]]},{"id":490,"k":"白髪","r":"しらが","m":"Uban, rambut putih","h":[]},{"id":491,"k":"髪型","r":"かみがた","m":"Gaya rambut, model rambut","h":[]},{"id":492,"k":"髪の毛","r":"かみのけ","m":"Rambut (di kepala)","h":[]},{"id":493,"k":"散髪","r":"さんぱつ","m":"Potong rambut","h":[]},{"id":494,"k":"忙しい","r":"いそがしい","m":"Sibuk, banyak kerja; terburu-buru, gelisah","h":[]},{"id":495,"k":"多忙","r":"たぼう","m":"Sangat sibuk, kesibukan","h":[]},{"id":496,"k":"煩忙","r":"はんぼう","m":"Kesibukan, sibuk dengan urusan","h":[]},{"id":497,"k":"忙殺","r":"ぼうさつ","m":"Sangat sibuk, kewalahan dengan pekerjaan","h":[["謀殺","Pembunuhan berencana"]]},{"id":498,"k":"忙しい","r":"せわしい","m":"Sibuk, hiruk-pikuk; terburu-buru, gelisah","h":[]},{"id":499,"k":"汗","r":"かん","m":"Khan (penguasa suku Tatar abad pertengahan)","h":[["缶","Kaleng"],["勘","Intuisi"],["管","Pipa"]]},{"id":500,"k":"冷や汗","r":"ひやあせ","m":"Keringat dingin","h":[]},{"id":501,"k":"発汗","r":"はっかん","m":"Berkeringat, pengeluaran keringat","h":[["発刊","Penerbitan"],["発艦","Lepas landas kapal induk"]]},{"id":502,"k":"汗水","r":"あせみず","m":"Keringat bercucuran, jerih payah","h":[]},{"id":503,"k":"汗ばむ","r":"あせばむ","m":"Berkeringat, lembap karena keringat","h":[]}];
+
+  // Ilustrasi SVG buatan sendiri (satu per kata)
+  var K = "#1b2440", RED = "#e0533d", YEL = "#f6b93b", BLU = "#4a8fe7", GRY = "#8f99bb", GRN = "#5fb36b";
+  var S = 'stroke="' + K + '" stroke-width="3"';
+  function svg(inner) {
+    return '<svg viewBox="0 0 100 100" stroke-linejoin="round" stroke-linecap="round" aria-hidden="true">' + inner + '</svg>';
+  }
+  function star(cx, cy, ro, ri, n) {
+    var p = [];
+    for (var k = 0; k < n * 2; k++) {
+      var r = k % 2 ? ri : ro;
+      var a = Math.PI * k / n - Math.PI / 2;
+      p.push((cx + r * Math.cos(a)).toFixed(1) + "," + (cy + r * Math.sin(a)).toFixed(1));
+    }
+    return p.join(" ");
+  }
+  var checks = "";
+  for (var r = 0; r < 4; r++) {
+    for (var c = 0; c < 6; c++) {
+      checks += '<rect x="' + (30 + c * 7.67).toFixed(2) + '" y="' + (16 + r * 8) + '" width="7.67" height="8" fill="' + ((r + c) % 2 ? "#ffffff" : K) + '"/>';
+    }
+  }
+  var PICS = {
+    noukoi: svg('<path d="M36 18Q32 26 36 32M50 14Q46 24 50 32M64 18Q60 26 64 32" fill="none" stroke="' + GRY + '" stroke-width="3.5"/><path d="M66 50H72a9 9 0 0 1 0 20H64" fill="none" ' + S + '/><path d="M24 42H68V70Q68 84 54 84H38Q24 84 24 70Z" fill="#fff" ' + S + '/><path d="M24 50H68V70Q68 84 54 84H38Q24 84 24 70Z" fill="#4a2f22"/><path d="M24 42H68V70Q68 84 54 84H38Q24 84 24 70Z" fill="none" ' + S + '/>'),
+    koi: svg('<path d="M50 84C18 62 12 40 27 27C38 18 48 25 50 34C52 25 62 18 73 27C88 40 82 62 50 84Z" fill="' + RED + '" ' + S + '/><path d="M31 38Q34 32 40 31" fill="none" stroke="#fff" stroke-width="4"/>'),
+    kousei: svg('<path d="M14 80Q50 68 86 80V90H14Z" fill="#8a6a4a" ' + S + '/><path d="M50 78V46" fill="none" stroke="#3f8f4f" stroke-width="4.5"/><path d="M50 58C34 58 26 46 26 36C42 36 50 46 50 58Z" fill="' + GRN + '" ' + S + '/><path d="M50 48C50 34 59 26 76 26C76 40 67 48 50 48Z" fill="' + GRN + '" ' + S + '/><path d="M20 20L26 26M80 14L76 22M50 10V18" fill="none" stroke="' + YEL + '" stroke-width="4"/>'),
+    kousei2: svg('<rect x="22" y="12" width="46" height="70" rx="4" fill="#fff" ' + S + '/><path d="M30 26H60M30 36H60M30 46H50" fill="none" stroke="' + GRY + '" stroke-width="3"/><path d="M30 58Q35 52 40 58T50 58T60 58" fill="none" stroke="' + RED + '" stroke-width="3.5"/><g transform="rotate(40 74 66)"><rect x="70" y="42" width="9" height="30" fill="' + YEL + '" ' + S + '/><polygon points="70,72 79,72 74.5,82" fill="#f1d9b5" ' + S + '/></g>'),
+    bakuhatsu: svg('<polygon points="' + star(50, 50, 45, 25, 12) + '" fill="' + RED + '" ' + S + '/><polygon points="' + star(50, 50, 28, 14, 12) + '" fill="' + YEL + '"/>'),
+    tebukuro: svg('<rect x="68" y="44" width="11" height="26" rx="5.5" transform="rotate(30 73 68)" fill="' + BLU + '" ' + S + '/><rect x="30" y="20" width="9" height="28" rx="4.5" fill="' + BLU + '" ' + S + '/><rect x="40.5" y="12" width="9" height="36" rx="4.5" fill="' + BLU + '" ' + S + '/><rect x="51" y="14" width="9" height="34" rx="4.5" fill="' + BLU + '" ' + S + '/><rect x="61.5" y="22" width="9" height="26" rx="4.5" fill="' + BLU + '" ' + S + '/><rect x="30" y="40" width="42" height="34" rx="10" fill="' + BLU + '" ' + S + '/><rect x="31.5" y="38" width="39" height="6" fill="' + BLU + '"/><rect x="31" y="72" width="40" height="14" rx="3" fill="' + RED + '" ' + S + '/>'),
+    namida: svg('<path d="M50 12C50 12 27 42 27 60a23 23 0 0 0 46 0C73 42 50 12 50 12Z" fill="#6db3f2" ' + S + '/><path d="M37 62a13 13 0 0 0 8 13" fill="none" stroke="#fff" stroke-width="4"/>'),
+    koori: svg('<polygon points="50,18 78,32 50,46 22,32" fill="#e3f3ff" ' + S + '/><polygon points="22,32 50,46 50,80 22,66" fill="#a9d4f7" ' + S + '/><polygon points="50,46 78,32 78,66 50,80" fill="#7bb9ee" ' + S + '/><path d="M30 52V62M36 55V59" stroke="#fff" stroke-width="3"/><path d="M40 30L52 24" stroke="#fff" stroke-width="3"/>'),
+    saishuu: svg('<path d="M28 12V90" stroke="' + K + '" stroke-width="4"/><circle cx="28" cy="10" r="3.5" fill="' + K + '"/>' + checks + '<rect x="30" y="16" width="46" height="32" fill="none" ' + S + '/>'),
+    toushi: svg('<circle cx="50" cy="56" r="28" fill="#bfe0ff" ' + S + '/><path d="M24 48Q28 22 50 22Q72 22 76 48L68 43L62 51L54 43L46 51L38 43L32 51Z" fill="#fff" ' + S + '/><path d="M36 56H46M54 56H64" fill="none" ' + S + '/><path d="M38 74L43 69L48 74L53 69L58 74L63 69" fill="none" ' + S + '/><path d="M12 52Q8 58 12 64Q16 70 12 76M88 52Q92 58 88 64Q84 70 88 76" fill="none" stroke="' + BLU + '" stroke-width="3"/>')
+  };
+
+
+  // ---- Pustaka ikon ringan (dipakai bersama oleh banyak kata) ----
+  var R = RED, Y = YEL, B = BLU, G = GRY, N = GRN, W = "#ffffff", T = "#c9a46c", L = "#bfe0ff";
+  function P(d, f) { return '<path d="' + d + '" fill="' + (f || "none") + '" ' + S + '/>'; }
+  function C(x, y, r, f) { return '<circle cx="' + x + '" cy="' + y + '" r="' + r + '" fill="' + (f || "none") + '" ' + S + '/>'; }
+  function Q(x, y, w, h, f, rx) { return '<rect x="' + x + '" y="' + y + '" width="' + w + '" height="' + h + '" rx="' + (rx || 0) + '" fill="' + (f || "none") + '" ' + S + '/>'; }
+  function A(d, col, w) { return '<path d="' + d + '" fill="none" stroke="' + col + '" stroke-width="' + (w || 4) + '"/>'; }
+  function RG(x, y, r, col) { return '<circle cx="' + x + '" cy="' + y + '" r="' + r + '" fill="none" stroke="' + col + '" stroke-width="6"/>'; }
+  function TX(s, x, y, z, col) { return '<text x="' + x + '" y="' + y + '" font-size="' + z + '" font-weight="700" text-anchor="middle" fill="' + col + '" font-family="Arial,sans-serif">' + s + '</text>'; }
+  function GR(t, inner) { return '<g transform="' + t + '">' + inner + '</g>'; }
+  var ICONS = {
+    swap: A("M18 36H80", R, 5) + A("M68 24L80 36L68 48", R, 5) + A("M82 64H20", B, 5) + A("M32 52L20 64L32 76", B, 5),
+    train: Q(18, 26, 64, 42, B, 8) + Q(26, 34, 20, 14, W, 2) + Q(54, 34, 20, 14, W, 2) + C(34, 76, 6, K) + C(66, 76, 6, K),
+    ball: C(50, 44, 26, L) + A("M38 36Q42 28 52 28", W, 4) + P("M28 82L36 68H64L72 82Z", T),
+    coins: C(36, 62, 18, Y) + C(62, 44, 18, Y) + P("M62 36V52"),
+    hand: P("M30 82V52Q30 46 36 46H40V32Q40 26 46 26Q52 26 52 32V46H58V36Q58 30 64 30Q70 30 70 36V52L76 46Q82 42 84 48Q86 52 80 58L68 78Q64 84 58 84H40Q30 84 30 82Z", Y),
+    handshake: Q(6, 38, 22, 24, B, 4) + Q(72, 38, 22, 24, R, 4) + P("M28 42L50 36L72 42V60L52 70L28 58Z", Y) + A("M40 52L60 60", K, 3),
+    road: P("M38 18H62L88 88H12Z", G) + A("M50 26V36M50 46V58M50 68V82", W, 4),
+    stretch: A("M16 50H84", R, 5) + A("M28 36L14 50L28 64", R, 5) + A("M72 36L86 50L72 64", R, 5),
+    pull: Q(16, 38, 38, 36, "#f1f4fa", 4) + A("M42 56H88", R, 5) + A("M76 44L88 56L76 68", R, 5),
+    bomb: C(44, 60, 26, K) + A("M62 38L72 28", T, 5) + A("M76 14V22M84 20L78 24M70 14L72 20", Y, 3) + A("M30 50Q32 44 38 42", W, 4),
+    plain: C(24, 50, 13, L) + C(50, 50, 13, L) + C(76, 50, 13, L) + A("M16 76H84", G, 4),
+    rings: C(36, 58, 20) + C(64, 58, 20) + P("M50 22L56 28L50 34L44 28Z", L),
+    ringsbreak: C(30, 58, 18) + C(70, 58, 18) + A("M50 24L44 44L56 54L50 80", R, 4),
+    cake: Q(22, 54, 56, 26, "#f6d7e0", 4) + Q(47, 34, 6, 20, B, 1) + P("M50 22Q44 30 50 33Q56 30 50 22Z", Y),
+    cane: A("M44 86V30Q44 14 60 14Q74 14 74 28", K, 6),
+    seasons: P("M50 50V16A34 34 0 0 1 84 50Z", N) + P("M50 50H84A34 34 0 0 1 50 84Z", R) + P("M50 50V84A34 34 0 0 1 16 50Z", Y) + P("M50 50H16A34 34 0 0 1 50 16Z", L),
+    snow: A("M50 14V86M19 32L81 68M19 68L81 32", B, 5) + C(50, 50, 6, W),
+    rain: P("M16 52A34 34 0 0 1 84 52Z", B) + A("M50 52V78Q50 88 40 84", K, 4) + A("M28 64V72M62 66V74M74 76V84", B, 4),
+    push: Q(12, 32, 30, 38, Y, 8) + A("M48 50H88", R, 5) + A("M76 38L88 50L76 62", R, 5),
+    fall: Q(16, 34, 16, 48, L, 2) + GR("rotate(38 62 82)", Q(54, 38, 16, 44, B, 2)),
+    worry: C(50, 62, 24, "#f7d9b9") + A("M40 60H46M54 60H60", K, 3) + P("M40 74Q50 68 60 74") + P("M24 38Q18 28 30 24Q34 12 48 16Q62 10 68 24Q82 26 74 38Z", G),
+    check: C(50, 50, 32, N) + A("M34 50L46 62L68 38", W, 7),
+    tangle: RG(40, 50, 22, B) + RG(60, 50, 22, R),
+    spark: P("M56 10L28 54H48L40 90L74 42H54Z", Y),
+    board: P("M18 42L62 22V78L18 58Z", R) + Q(8, 42, 12, 16, G, 2) + A("M70 36L84 28M72 50H88M70 64L84 72", Y, 4),
+    pay: Q(12, 60, 62, 18, T, 6) + C(42, 38, 16, Y) + A("M42 31V45", K, 3),
+    up: P("M50 14L84 52H64V86H36V52H16Z", N),
+    clock: C(50, 50, 34, W) + A("M50 50V28M50 50L66 58", K, 5),
+    scent: Q(34, 42, 32, 42, "#cfe3ff", 8) + Q(42, 28, 16, 14, Y, 2) + A("M70 24Q80 28 74 38M78 16Q92 22 84 36", B, 3.5),
+    houses: P("M10 60L28 42L46 60V84H10Z", R) + P("M50 56L70 38L90 56V84H50Z", B) + Q(20, 68, 12, 16, W) + Q(62, 66, 16, 18, W),
+    refresh: A("M76 42A26 26 0 1 0 78 60", B, 6) + A("M78 22V44H56", B, 6),
+    hug: A("M22 76Q6 44 40 30", T, 7) + A("M78 76Q94 44 60 30", T, 7) + P("M50 72C34 60 34 44 44 44C48 44 50 48 50 50C50 48 52 44 56 44C66 44 66 60 50 72Z", R),
+    ghost: P("M26 84V46Q26 18 50 18Q74 18 74 46V84L64 76L56 84L50 76L44 84L36 76Z", "#f1f4fa") + C(41, 46, 4, K) + C(59, 46, 4, K) + P("M44 60Q50 54 56 60Q50 68 44 60Z", K),
+    back: A("M30 78V42Q30 26 46 26H70", B, 7) + A("M58 14L72 26L58 38", B, 7),
+    giant: C(44, 22, 12, Y) + Q(30, 36, 28, 52, B, 8) + C(80, 72, 5, Y) + Q(74, 78, 12, 12, R, 2),
+    tree: Q(44, 54, 12, 32, T, 2) + C(50, 36, 28, N),
+    quake: A("M14 24Q22 16 30 24T46 24T62 24T78 24", R, 4) + P("M22 62L50 34L78 62Z", B) + Q(30, 62, 40, 20, "#f1f4fa") + P("M8 88H34L42 80L52 92L60 84H92"),
+    move: P("M12 58L34 38L56 58V84H12Z", B) + Q(26, 66, 14, 18, W) + A("M62 60H90", R, 5) + A("M80 48L92 60L80 72", R, 5),
+    hurdle: Q(14, 40, 72, 10, R, 2) + A("M24 50V84M76 50V84", K, 5) + C(50, 22, 8, Y),
+    touch: P("M44 86V46Q44 38 52 38Q60 38 60 46V56L74 60Q82 62 80 72L76 86Z", Y) + A("M30 30Q34 22 44 22", B, 3.5) + A("M22 22Q30 10 46 10", B, 3.5),
+    lean: A("M38 38L54 84", K, 6) + A("M32 52L66 60", K, 6) + C(34, 26, 10, Y) + Q(72, 22, 12, 64, G, 2),
+    pray: P("M50 86L36 54Q34 40 42 28L50 16L58 28Q66 40 64 54Z", Y) + A("M50 20V80", K, 2.5) + A("M20 40L28 44M80 40L72 44M50 6V10", Y, 4),
+    dirty: P("M24 54Q20 30 44 30Q52 18 68 28Q86 34 76 54Q86 72 62 74Q50 86 36 72Q18 72 24 54Z", "#8a6a4a"),
+    smoke: Q(14, 62, 50, 12, W, 2) + Q(62, 62, 16, 12, T, 2) + A("M72 52Q68 42 76 36Q84 30 78 22", G, 4),
+    bulb: C(50, 40, 24, Y) + Q(40, 62, 20, 16, G, 3) + A("M44 84H56", K, 4) + A("M50 6V12M24 16L28 22M76 16L72 22", Y, 3),
+    gift: Q(22, 46, 56, 38, R, 3) + Q(18, 34, 64, 12, B, 2) + Q(44, 34, 12, 50, Y) + P("M50 34Q36 14 32 26Q30 34 50 34Q70 34 68 26Q64 14 50 34Z", Y),
+    run: C(58, 20, 9, Y) + A("M56 30L44 54L28 56M44 54L58 70L50 88M50 40L74 46M50 40L34 32", K, 6),
+    slope: P("M12 80L88 38V80Z", G) + C(36, 56, 9, R),
+    thread: Q(32, 22, 36, 10, T, 2) + Q(32, 68, 36, 10, T, 2) + Q(38, 32, 24, 36, R) + A("M62 44Q84 44 84 66Q84 84 64 84", R, 3.5),
+    parking: Q(18, 18, 64, 64, B, 10) + TX("P", 50, 68, 52, W),
+    intro: C(28, 32, 10, Y) + Q(16, 46, 24, 30, B, 8) + C(72, 32, 10, Y) + Q(60, 46, 24, 30, R, 8) + A("M44 60H56", K, 4),
+    letter: Q(14, 28, 72, 48, W, 4) + P("M14 30L50 56L86 30"),
+    job: Q(16, 36, 68, 44, T, 6) + P("M38 36V26H62V36") + A("M16 56H84", K, 3),
+    yen: C(50, 50, 34, Y) + TX("¥", 50, 66, 44, K),
+    thin: Q(14, 56, 72, 8, L, 1) + A("M30 40V52M50 34V52M70 40V52", K, 3),
+    dim: P("M62 18A34 34 0 1 0 84 66A28 28 0 0 1 62 18Z", Y),
+    deep: Q(10, 10, 80, 80, "#cfd6e6", 4) + Q(26, 26, 48, 48, G, 3) + Q(40, 40, 20, 20, K, 2),
+    woman: C(50, 28, 14, Y) + P("M28 86Q28 46 50 46Q72 46 72 86Z", R) + P("M36 26Q36 8 50 12Q64 8 64 26Q58 18 50 20Q42 18 36 26Z", K),
+    packed: C(34, 40, 10, R) + C(50, 34, 10, Y) + C(66, 40, 10, B) + Q(16, 50, 68, 34, T, 4),
+    eye: P("M10 50Q50 12 90 50Q50 88 10 50Z", W) + C(50, 50, 14, B) + C(50, 50, 6, K),
+    can: P("M25 30V78A25 7 0 0 0 75 78V30", "#d9dee9") + Q(26.5, 44, 47, 22, R) + C(50, 55, 6, W) + P("M25 30A25 7 0 0 1 75 30A25 7 0 0 1 25 30Z", "#f1f4fa"),
+    twins: C(32, 32, 10, Y) + Q(20, 46, 24, 36, B, 8) + C(68, 32, 10, Y) + Q(56, 46, 24, 36, B, 8) + A("M44 60H56", K, 4),
+    thorn: A("M18 86Q40 52 80 22", N, 6) + P("M36 66L28 58L42 60Z", G) + P("M52 50L48 40L60 46Z", G) + P("M66 38L66 28L76 34Z", G) + C(84, 16, 10, R),
+    needle: A("M18 84L74 28", G, 5) + C(78, 24, 8) + A("M78 32Q92 50 70 62", R, 3.5),
+    card: Q(14, 28, 72, 44, W, 4) + A("M24 42H52M24 54H44", K, 3.5) + C(70, 46, 8, R),
+    fish: P("M14 50Q36 24 66 40L86 28V72L66 60Q36 76 14 50Z", B) + C(34, 46, 3, K),
+    arrive: P("M50 88C30 60 24 50 24 38A26 26 0 0 1 76 38C76 50 70 62 50 88Z", R) + C(50, 38, 9, W),
+    bed: Q(12, 36, 8, 50, T) + Q(12, 58, 76, 14, B, 3) + Q(22, 46, 22, 12, W, 5) + Q(80, 50, 8, 36, T),
+    wall: Q(12, 24, 76, 52, R, 2) + A("M12 41H88M12 58H88M40 24V41M64 41V58M30 58V76", K, 2.5),
+    frame: Q(14, 20, 72, 60, W, 3) + P("M18 74L38 48L52 62L64 50L82 74Z", N) + C(68, 34, 6, Y),
+    pier: C(50, 22, 8) + A("M50 30V82M34 46H66M20 62Q24 84 50 84Q76 84 80 62", K, 5),
+    thief: P("M16 34H84V52Q84 68 70 68Q58 68 50 58Q42 68 30 68Q16 68 16 52Z", K) + C(34, 50, 6, W) + C(66, 50, 6, W),
+    flame: P("M50 12C56 30 76 38 74 60C72 80 60 88 50 88C38 88 26 80 26 62C26 50 34 44 38 36C42 44 46 40 44 30C46 22 48 16 50 12Z", R) + P("M50 52C54 62 62 64 60 72C58 78 54 80 50 80C44 80 40 76 40 70C40 62 48 58 50 52Z", Y),
+    you: P("M12 46H56V38L86 52L56 66V58H12Z", Y),
+    tea: P("M18 40H72V62Q72 82 46 82Q18 82 18 62Z", W) + P("M72 46H80Q88 46 88 54Q88 62 74 62") + A("M24 48H66", N, 5) + A("M36 30Q32 22 38 14M52 30Q48 22 54 14", G, 3.5),
+    father: C(50, 28, 14, Y) + P("M26 88Q26 50 50 50Q74 50 74 88Z", B) + A("M50 52V72", R, 5),
+    storm: P("M24 52Q10 52 14 38Q18 28 30 30Q34 16 52 18Q66 18 70 32Q88 30 88 46Q88 52 76 52Z", G) + P("M52 54L40 74H52L46 92L68 66H56L62 54Z", Y),
+    desert: P("M8 76Q30 46 52 66Q70 52 92 76Z", T) + C(74, 26, 12, Y),
+    logs: C(30, 68, 14, T) + C(60, 68, 14, T) + C(45, 46, 14, T) + C(30, 68, 5, "#e8d3a8") + C(60, 68, 5, "#e8d3a8") + C(45, 46, 5, "#e8d3a8"),
+    rock: P("M16 76L26 40L50 24L78 36L88 66L70 82Z", G) + A("M50 24L46 54L70 82M26 40L46 54", K, 2.5),
+    bury: P("M10 82Q50 40 90 82Z", T) + A("M72 22L58 56", K, 5) + P("M50 56L64 52L68 64L54 68Z", G),
+    bag: P("M34 26H66L74 40Q86 54 80 74Q76 88 50 88Q24 88 20 74Q14 54 26 40Z", T) + A("M34 26Q50 36 66 26", K, 3),
+    wind: A("M14 36H60Q74 36 74 26Q74 18 66 18", B, 5) + A("M14 54H78Q90 54 90 64Q90 72 80 72", B, 5) + A("M14 72H44", B, 5),
+    seal: P("M40 62V40Q40 28 50 28Q60 28 60 40V62", R) + Q(24, 62, 52, 16, R, 3) + Q(20, 80, 60, 6, G, 2),
+    barrier: Q(14, 32, 72, 18, R, 2) + A("M28 32L20 50M46 32L38 50M64 32L56 50M82 32L74 50", W, 4) + A("M24 50V84M76 50V84", K, 5),
+    castle: P("M20 86V52H80V86Z", W) + P("M12 54L50 24L88 54Z", B) + Q(42, 64, 16, 22, T, 2),
+    girl: C(50, 30, 14, Y) + P("M34 88L40 48H60L66 88Z", R) + P("M36 28Q36 10 50 14Q64 10 64 28Q56 20 50 22Q44 20 36 28Z", K),
+    owl: P("M30 84V40Q30 18 50 18Q70 18 70 40V84Z", T) + C(40, 42, 9, W) + C(60, 42, 9, W) + C(40, 42, 3, K) + C(60, 42, 3, K) + P("M46 54L50 62L54 54Z", Y),
+    arm: P("M16 76Q14 42 42 36Q54 32 60 42Q80 38 82 56Q78 70 58 68Q44 64 34 80Z", Y),
+    watch: Q(40, 10, 20, 80, G, 3) + C(50, 50, 22, W) + A("M50 50V38M50 50L58 54", K, 3),
+    scale: A("M50 20V82M34 82H66M20 36H80", K, 4) + P("M10 58Q20 72 30 58Z", B) + P("M70 58Q80 72 90 58Z", R) + A("M20 36L10 58M20 36L30 58M80 36L70 58M80 36L90 58", K, 2),
+    stetho: A("M28 14V46Q28 66 48 66Q68 66 68 46V14", K, 5) + C(70, 78, 10, B) + A("M48 66Q48 80 60 78", K, 5),
+    cushion: P("M14 44Q50 28 86 44Q92 62 86 76Q50 92 14 76Q8 62 14 44Z", L) + C(50, 60, 3, K),
+    bend: A("M20 76Q40 22 80 34", R, 6) + A("M66 22L82 34L68 48", R, 6),
+    fog: A("M14 36H70M26 52H86M14 68H64M30 84H80", G, 6) + C(78, 22, 10, Y),
+    shoulder: C(50, 28, 14, Y) + P("M14 88Q14 52 50 52Q86 52 86 88Z", B) + C(26, 68, 6, R),
+    zero: C(50, 50, 32, W) + TX("0", 50, 68, 52, R),
+    angry: C(50, 52, 32, R) + A("M30 38L46 46M70 38L54 46", K, 4) + C(40, 54, 3, K) + C(60, 54, 3, K) + A("M38 72Q50 62 62 72", K, 4),
+    inn: P("M12 56L50 26L88 56Z", B) + Q(22, 56, 56, 32, T, 2) + Q(44, 64, 12, 24, W) + C(78, 20, 7, Y),
+    book: Q(20, 16, 60, 70, B, 4) + Q(26, 22, 48, 58, W, 2) + A("M34 36H66M34 48H66M34 60H56", K, 3),
+    cheers: Q(14, 40, 30, 42, Y, 3) + Q(56, 40, 30, 42, Y, 3) + A("M50 18V28M36 24L40 30M64 24L60 30", R, 4),
+    candy: C(50, 50, 18, R) + P("M32 50L14 36V64Z", Y) + P("M68 50L86 36V64Z", Y) + A("M42 42Q50 36 58 42", W, 3),
+    star: P("M50 14L60 38L86 40L66 56L72 82L50 68L28 82L34 56L14 40L40 38Z", Y),
+    broom: A("M72 12L42 60", T, 6) + P("M28 66L46 58L58 76L40 90Z", Y) + A("M34 74L48 66M40 82L52 72", K, 2.5),
+    dig: A("M70 12V54", T, 6) + P("M54 54H86L82 74Q70 90 58 74Z", G) + P("M10 86Q28 66 48 86Z", T),
+    tired: C(50, 52, 32, "#f7d9b9") + A("M34 48H46M54 48H66", K, 4) + A("M36 58Q40 62 46 58M54 58Q60 62 64 58", G, 3) + A("M40 74H60", K, 4),
+    people: C(28, 34, 9, Y) + C(50, 28, 9, Y) + C(72, 34, 9, Y) + P("M16 78Q16 48 28 48Q40 48 40 78Z", B) + P("M36 80Q36 44 50 44Q64 44 64 80Z", R) + P("M60 78Q60 48 72 48Q84 48 84 78Z", B),
+    lock: Q(24, 44, 52, 40, Y, 6) + P("M34 44V32Q34 16 50 16Q66 16 66 32V44") + C(50, 62, 5, K),
+    sink: P("M16 54H84L74 72H26Z", R) + A("M50 54V22L72 48H50", K, 3) + A("M8 76Q20 68 32 76T56 76T80 76T96 76", B, 4) + A("M8 88Q20 80 32 88T56 88T80 88", B, 4),
+    shh: C(50, 50, 32, Y) + C(40, 42, 3, K) + C(60, 42, 3, K) + Q(46, 52, 8, 26, "#f1cfa5", 4) + A("M38 72H62", K, 3),
+    fireworks: A("M50 18V34M50 66V82M18 50H34M66 50H82M27 27L38 38M62 62L73 73M73 27L62 38M38 62L27 73", R, 4) + C(50, 50, 5, Y),
+    heartbreak: P("M50 34C48 25 38 18 28 27C14 40 20 62 50 84L44 62L54 52L44 44Z", R) + P("M54 34C56 25 66 18 76 27C90 40 84 62 58 84L60 66L52 56L62 46Z", R),
+    couple: C(30, 48, 12, Y) + C(70, 48, 12, Y) + P("M18 88Q18 66 30 66Q42 66 42 88Z", B) + P("M58 88Q58 66 70 66Q82 66 82 88Z", R) + P("M50 38C42 30 38 20 46 18C48 18 50 20 50 22C50 20 52 18 54 18C62 20 58 30 50 38Z", R),
+    waist: P("M26 14H74L68 50L78 88H22L32 50Z", B) + Q(30, 46, 40, 8, K) + A("M12 50H22M78 50H88", R, 4),
+    dance: C(52, 18, 9, Y) + A("M52 28L50 54L36 84M50 54L68 84M52 36L80 28M52 36L26 50", K, 6),
+    zzz: TX("Z", 34, 74, 40, B) + TX("z", 58, 52, 30, B) + TX("z", 74, 34, 22, B),
+    gem: P("M22 40L36 22H64L78 40L50 84Z", L) + A("M22 40H78M36 22L42 40L50 84M64 22L58 40L50 84", K, 2.5),
+    narrow: A("M12 50H38M26 38L38 50L26 62", R, 5) + A("M88 50H62M74 38L62 50L74 62", R, 5) + Q(44, 32, 12, 36, W, 2),
+    volcano: P("M12 86L40 42H60L88 86Z", G) + A("M42 42L34 28M50 40V22M58 42L68 28", R, 4),
+    cat: P("M24 72V32L40 44H60L76 32V72Q76 88 50 88Q24 88 24 72Z", "#f1c27d") + C(40, 62, 3, K) + C(60, 62, 3, K) + P("M46 70H54L50 74Z", R),
+    blade: P("M20 80L70 16L80 26Z", "#d9dee9") + A("M20 80L12 90", T, 6),
+    brush: A("M74 12L42 54", T, 6) + P("M16 88Q12 70 30 62L44 72Q40 88 16 88Z", R),
+    dry: C(50, 50, 16, Y) + A("M50 12V24M50 76V88M12 50H24M76 50H88M23 23L31 31M69 69L77 77M77 23L69 31M31 69L23 77", Y, 4),
+    battery: Q(22, 34, 52, 36, G, 4) + Q(74, 46, 8, 14, G, 2) + Q(28, 40, 14, 24, N, 2) + Q(46, 40, 12, 24, N, 2),
+    hair: C(50, 56, 24, "#f7d9b9") + P("M26 52Q26 16 52 18Q76 20 74 52Q60 36 44 34Q34 40 26 52Z", K),
+    busy: C(50, 50, 30, W) + A("M50 50V30M50 50L66 56", K, 4) + A("M16 30L8 26M84 30L92 26M14 70L6 74M86 70L94 74", R, 4),
+    sweat: P("M36 20C36 20 22 40 22 52A14 14 0 0 0 50 52C50 40 36 20 36 20Z", L) + P("M68 42C68 42 58 58 58 66A10 10 0 0 0 78 66C78 58 68 42 68 42Z", L),
+    sakebi: C(50, 57, 28, Y) + P("M36 44L45 48L36 52M64 44L55 48L64 52") + P("M42 68A8 10 0 1 0 58 68A8 10 0 1 0 42 68Z", K) + A("M50 8V18M23 20L29 27M77 20L71 27", R, 4)
+  };
+  for (var ik in ICONS) { ICONS[ik] = svg(ICONS[ik]); }
+
+  // Kunci ikon untuk tiap kata (urutan sama dengan DATA)
+  var ICOKEY = ["swap", "swap", "train", "train", "swap", "swap", "ball", "coins", "hand", "hand", "coins", "handshake", "handshake", "handshake", "handshake", "handshake", "handshake", "road", "road", "road", "road", "road", "pull", "pull", "pull", "pull", "pull", "stretch", "stretch", "stretch", "stretch", "bakuhatsu", "bomb", "bomb", "bomb", "bomb", "plain", "plain", "plain", "plain", "plain", "rings", "rings", "ringsbreak", "rings", "rings", "cake", "cake", "cake", "cane", "cane", "seasons", "seasons", "snow", "saishuu", "rain", "push", "push", "push", "push", "fall", "worry", "fall", "fall", "fall", "saishuu", "saishuu", "saishuu", "saishuu", "check", "check", "check", "check", "tangle", "tangle", "tangle", "spark", "tangle", "board", "board", "board", "board", "board", "pay", "pay", "pay", "pay", "pay", "up", "up", "up", "up", "up", "clock", "clock", "clock", "clock", "clock", "scent", "scent", "flame", "houses", "scent", "refresh", "kousei", "refresh", "refresh", "refresh", "hug", "star", "clock", "hug", "hug", "ghost", "ghost", "ghost", "ghost", "ghost", "back", "back", "back", "back", "back", "giant", "giant", "coins", "star", "tree", "quake", "quake", "quake", "quake", "quake", "quake", "move", "hurdle", "refresh", "houses", "touch", "touch", "touch", "touch", "touch", "lean", "lean", "lean", "pray", "handshake", "dirty", "dirty", "dirty", "dirty", "dirty", "dirty", "swap", "swap", "swap", "swap", "swap", "swap", "bulb", "gift", "bulb", "gift", "star", "run", "run", "run", "run", "run", "slope", "slope", "slope", "slope", "slope", "twins", "koi", "thread", "thread", "card", "parking", "parking", "parking", "parking", "parking", "intro", "intro", "intro", "hand", "letter", "job", "job", "job", "job", "job", "swap", "swap", "yen", "swap", "yen", "gift", "gift", "gift", "gift", "gift", "thin", "dim", "kousei", "thin", "thin", "deep", "deep", "woman", "rock", "star", "packed", "packed", "eye", "can", "saishuu", "twins", "twins", "twins", "kousei", "twins", "thorn", "thorn", "thorn", "spark", "thorn", "needle", "card", "fish", "arrive", "arrive", "arrive", "arrive", "arrive", "bed", "bed", "bed", "bed", "bed", "wall", "wall", "frame", "pier", "wall", "thief", "thief", "thief", "thief", "thief", "worry", "worry", "worry", "worry", "flame", "you", "tea", "eye", "father", "storm", "storm", "desert", "storm", "logs", "rock", "rock", "rock", "rock", "bury", "bury", "bury", "bury", "bury", "bag", "tebukuro", "road", "bag", "bag", "wind", "snow", "wind", "wind", "smoke", "seal", "letter", "barrier", "letter", "castle", "girl", "girl", "girl", "girl", "father", "owl", "owl", "owl", "owl", "owl", "arm", "watch", "arm", "arm", "arm", "scale", "scale", "scale", "kousei2", "scale", "bed", "dry", "bed", "wall", "stetho", "card", "cushion", "people", "cushion", "bend", "bend", "castle", "castle", "castle", "castle", "castle", "noukoi", "noukoi", "noukoi", "fog", "shoulder", "card", "shoulder", "shoulder", "shoulder", "zero", "zero", "zero", "clock", "zero", "angry", "angry", "angry", "angry", "angry", "inn", "inn", "inn", "book", "inn", "cheers", "cheers", "cheers", "cheers", "cheers", "candy", "star", "candy", "hug", "candy", "broom", "broom", "broom", "broom", "dig", "dig", "dig", "dig", "dig", "tired", "tired", "tired", "tired", "tired", "people", "people", "people", "people", "people", "cushion", "cushion", "cushion", "cushion", "lock", "sink", "shh", "sink", "sink", "shh", "koori", "snow", "koori", "koori", "toushi", "smoke", "smoke", "fireworks", "koi", "couple", "couple", "heartbreak", "koi", "houses", "houses", "houses", "houses", "train", "waist", "waist", "waist", "waist", "waist", "dance", "dance", "dance", "dance", "dance", "zzz", "zzz", "zzz", "zzz", "zzz", "ghost", "ghost", "ghost", "ghost", "gem", "gem", "gem", "gem", "gem", "narrow", "narrow", "narrow", "narrow", "narrow", "tea", "tea", "tea", "tea", "sakebi", "spark", "koori", "volcano", "koori", "koori", "koori", "namida", "namida", "namida", "namida", "namida", "cat", "scale", "cat", "cat", "father", "blade", "blade", "blade", "blade", "blade", "brush", "brush", "brush", "brush", "brush", "houses", "houses", "houses", "houses", "houses", "sakebi", "sakebi", "sakebi", "sakebi", "sakebi", "dry", "battery", "dry", "dry", "cheers", "pray", "pray", "pray", "pray", "pray", "hair", "hair", "hair", "hair", "hair", "busy", "busy", "busy", "busy", "busy", "sweat", "sweat", "sweat", "sweat", "sweat"];
+
+
+  // Kelompok per 100 kata; 3 kata terakhir digabung ke kelompok terakhir (401-503)
+  var GROUPS = [[0, 100], [100, 200], [200, 300], [300, 400], [400, DATA.length]];
+
+  var g = 0, i = 0, mode = "kanji", shuffled = false, order = [];
+  var userPics = {};
+  var db = null;
+
+  try {
+    var st = JSON.parse(localStorage.getItem("kartu503") || "{}");
+    if (st.mode === "yomi" || st.mode === "kanji") mode = st.mode;
+    if (typeof st.g === "number" && st.g >= 0 && st.g < GROUPS.length) g = st.g;
+    if (st.shuffled === true) shuffled = true;
+  } catch (e) {}
+  function saveState() {
+    try { localStorage.setItem("kartu503", JSON.stringify({ mode: mode, g: g, shuffled: shuffled })); } catch (e) {}
+  }
+
+  var card = document.getElementById("card");
+  var frontEl = document.getElementById("front");
+  var backEl = document.getElementById("back");
+
+  function esc(t) { return String(t).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); }
+
+  // ---- gambar buatan pengguna (IndexedDB, hanya di browser ini) ----
+  function openDB(done) {
+    try {
+      var rq = indexedDB.open("kartu-kanji-503", 1);
+      rq.onupgradeneeded = function () { rq.result.createObjectStore("pics"); };
+      rq.onsuccess = function () {
+        db = rq.result;
+        try {
+          var cur = db.transaction("pics", "readonly").objectStore("pics").openCursor();
+          cur.onsuccess = function () {
+            var c = cur.result;
+            if (c) { userPics[c.key] = c.value; c.continue(); } else done();
+          };
+          cur.onerror = function () { done(); };
+        } catch (e) { done(); }
+      };
+      rq.onerror = function () { done(); };
+    } catch (e) { done(); }
+  }
+  function putPic(id, url) {
+    userPics[id] = url;
+    try { db.transaction("pics", "readwrite").objectStore("pics").put(url, id); } catch (e) {}
+  }
+  function removePic(id) {
+    delete userPics[id];
+    try { db.transaction("pics", "readwrite").objectStore("pics").delete(id); } catch (e) {}
+  }
+
+  var ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="3"/><circle cx="9" cy="10" r="1.8"/><path d="M4 18l5-5 4 4 3-3 4 4"/></svg>';
+
+  function picHtml(c, mini) {
+    var cls = "pic" + (mini ? " mini" : "");
+    if (userPics[c.id]) return '<div class="' + cls + '" aria-hidden="true"><img alt="" src="' + userPics[c.id] + '"></div>';
+    var key = ICOKEY[c.id - 1], art = PICS[key] || ICONS[key];
+    if (art) return '<div class="' + cls + '" aria-hidden="true">' + art + '</div>';
+    return '<div class="' + cls + ' empty" aria-hidden="true">' + ICON + '<span>Belum ada gambar</span></div>';
+  }
+
+  function sizeClass(text, limit) { return text.length > limit ? " long" : ""; }
+
+  function homoHtml(c) {
+    var h = '<div class="homo"><div class="homo-title">Kata dengan bunyi sama</div>';
+    if (c.h && c.h.length) {
+      h += '<div class="chips">' + c.h.map(function (x) {
+        return '<span class="chip"><span class="k serif">' + esc(x[0]) + '</span><span>' + esc(x[1]) + '</span></span>';
+      }).join("") + '</div>';
+    } else {
+      h += '<div class="none">Tidak ada kata sebunyi yang umum dipakai</div>';
+    }
+    return h + '</div>';
+  }
+
+  function render() {
+    var c = DATA[order[i]];
+    card.classList.remove("flipped");
+    var pic = picHtml(c, false), mini = picHtml(c, true);
+    if (mode === "kanji") {
+      frontEl.innerHTML = pic + '<div class="serif big' + sizeClass(c.k, 3) + '">' + esc(c.k) + '</div><div class="hint">Ketuk untuk melihat arti</div>';
+      backEl.innerHTML = '<div class="serif reading">' + esc(c.r) + '</div><div class="meaning">' + esc(c.m) + '</div>';
+    } else {
+      frontEl.innerHTML = pic + '<div class="serif big kana' + sizeClass(c.r, 5) + '">' + esc(c.r) + '</div><div class="hint">Ketuk untuk melihat arti</div>';
+      backEl.innerHTML = '<div class="meaning">' + esc(c.m) + '</div>' +
+        '<div class="row"><div class="serif kanji' + sizeClass(c.k, 3) + '">' + esc(c.k) + '</div>' + mini + '</div>' + homoHtml(c);
+    }
+    var total = order.length;
+    document.getElementById("counter").textContent = "No. " + c.id + " · " + (i + 1) + " / " + total;
+    document.getElementById("prev").disabled = i === 0;
+    var next = document.getElementById("next");
+    var lastCard = i === total - 1;
+    if (lastCard && g < GROUPS.length - 1) { next.textContent = "Kelompok berikutnya"; next.disabled = false; }
+    else { next.textContent = "Berikutnya"; next.disabled = lastCard; }
+    document.getElementById("addpic").textContent = userPics[c.id] ? "Ganti gambar" : "Tambah gambar";
+    document.getElementById("delpic").disabled = !userPics[c.id];
+  }
+
+  function buildOrder() {
+    var s = GROUPS[g][0], e = GROUPS[g][1];
+    order = [];
+    for (var k = s; k < e; k++) order.push(k);
+    if (shuffled) {
+      for (var a = order.length - 1; a > 0; a--) {
+        var j = Math.floor(Math.random() * (a + 1));
+        var t = order[a]; order[a] = order[j]; order[j] = t;
+      }
+    }
+    i = 0;
+  }
+
+  function renderGroups() {
+    var box = document.getElementById("groups");
+    box.innerHTML = "";
+    GROUPS.forEach(function (rg, idx) {
+      var b = document.createElement("button");
+      b.textContent = (rg[0] + 1) + "–" + rg[1];
+      b.setAttribute("aria-pressed", idx === g ? "true" : "false");
+      b.setAttribute("aria-label", "Kata " + (rg[0] + 1) + " sampai " + rg[1]);
+      b.addEventListener("click", function () { setGroup(idx); });
+      box.appendChild(b);
+    });
+  }
+
+  function setGroup(idx) {
+    g = idx; saveState(); buildOrder(); renderGroups(); render();
+  }
+  function setMode(m) {
+    mode = m;
+    document.getElementById("m-kanji").setAttribute("aria-checked", m === "kanji");
+    document.getElementById("m-yomi").setAttribute("aria-checked", m === "yomi");
+    saveState(); render();
+  }
+  function go(d) {
+    var n = i + d;
+    if (d > 0 && i === order.length - 1 && g < GROUPS.length - 1) { setGroup(g + 1); return; }
+    if (n < 0 || n >= order.length) return;
+    i = n; render();
+  }
+  function toggleShuffle() {
+    shuffled = !shuffled;
+    document.getElementById("shuffle").setAttribute("aria-pressed", shuffled ? "true" : "false");
+    saveState(); buildOrder(); render();
+  }
+
+  // ---- unggah gambar ----
+  var fileEl = document.getElementById("file");
+  document.getElementById("addpic").addEventListener("click", function () { fileEl.value = ""; fileEl.click(); });
+  document.getElementById("delpic").addEventListener("click", function () { removePic(DATA[order[i]].id); render(); });
+  fileEl.addEventListener("change", function () {
+    var f = fileEl.files && fileEl.files[0];
+    if (!f) return;
+    var id = DATA[order[i]].id;
+    var rd = new FileReader();
+    rd.onload = function () {
+      var img = new Image();
+      img.onload = function () {
+        var max = 320, sc = Math.min(1, max / Math.max(img.width, img.height));
+        var cv = document.createElement("canvas");
+        cv.width = Math.round(img.width * sc); cv.height = Math.round(img.height * sc);
+        cv.getContext("2d").drawImage(img, 0, 0, cv.width, cv.height);
+        putPic(id, cv.toDataURL("image/jpeg", 0.8));
+        render();
+      };
+      img.src = rd.result;
+    };
+    rd.readAsDataURL(f);
+  });
+
+  card.addEventListener("click", function () { card.classList.toggle("flipped"); });
+  document.getElementById("next").addEventListener("click", function () { go(1); });
+  document.getElementById("prev").addEventListener("click", function () { go(-1); });
+  document.getElementById("shuffle").addEventListener("click", toggleShuffle);
+  document.getElementById("m-kanji").addEventListener("click", function () { setMode("kanji"); });
+  document.getElementById("m-yomi").addEventListener("click", function () { setMode("yomi"); });
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "ArrowRight") go(1);
+    else if (e.key === "ArrowLeft") go(-1);
+  });
+
+  document.getElementById("shuffle").setAttribute("aria-pressed", shuffled ? "true" : "false");
+  document.getElementById("m-kanji").setAttribute("aria-checked", mode === "kanji");
+  document.getElementById("m-yomi").setAttribute("aria-checked", mode === "yomi");
+  buildOrder();
+  renderGroups();
+  render();
+  openDB(function () { render(); });
+</script>
+</body>
+</html>
